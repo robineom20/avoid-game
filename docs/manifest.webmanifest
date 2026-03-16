@@ -1,0 +1,19 @@
+{
+  "name": "피하기 게임",
+  "short_name": "피하기",
+  "description": "장애물을 피해서 점수를 올리는 미니 게임",
+  "lang": "ko-KR",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8efe2",
+  "theme_color": "#1d2a30",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

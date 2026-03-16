@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d2a30" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <title>피하기 게임</title>
+  <style>
+    :root {
+      --bg-1: #f8efe2;
+      --bg-2: #d8e6e0;
+      --panel: #1d2a30;
+      --accent: #ef6f6c;
+      --text: #142025;
+      --light: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 10%, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .wrap {
+      width: min(92vw, 520px);
+      background: rgba(255, 255, 255, 0.75);
+      border: 2px solid #24404a22;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 14px 32px rgba(22, 33, 38, 0.18);
+      backdrop-filter: blur(4px);
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .badge {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #1d2a3020;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #18242d 0%, #2f4757 100%);
+      border: 2px solid #ffffff70;
+    }
+
+    .notice {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 800;
+      color: #1d2a30;
+      background: #ffd166;
+      border: 1px solid #00000020;
+      border-radius: 10px;
+      padding: 8px 10px;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+      min-height: 38px;
+    }
+
+    .notice.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .start-panel {
+      margin-bottom: 0;
+      background: #ffffff;
+      border: 1px solid #1d2a3020;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .start-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 900;
+      color: #1d2a30;
+    }
+
+    .start-best {
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    .skin-panel {
+      margin-top: 10px;
+      background: #f8fafb;
+      border: 1px solid #1d2a301c;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .btn.alt {
+      background: #38586a;
+    }
+
+    .skin-view-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .skin-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .skin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .skin-pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .page-btn {
+      min-width: 34px;
+      border: 1px solid #1d2a3040;
+      border-radius: 8px;
+      background: #fff;
+      color: #1d2a30;
+      padding: 6px 9px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .page-btn.active {
+      background: #1d2a30;
+      color: #fff;
+      border-color: #1d2a30;
+    }
+
+    .skin-card {
+      border: 1px solid #1d2a3025;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .skin-card.selected {
+      border-color: #244f65;
+      box-shadow: inset 0 0 0 1px #244f65;
+    }
+
+    .skin-chip {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #00000022;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .mini-btn {
+      margin-top: 8px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 8px;
+      background: #2f4b59;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-btn:disabled {
+      background: #7f8b91;
+      cursor: not-allowed;
+    }
+
+    .btn {
+      margin-top: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: var(--panel);
+      color: var(--light);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn:hover { filter: brightness(1.08); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section id="lobbyView" class="view active">
+      <section class="start-panel">
+        <h2 class="start-title">피하기 게임</h2>
+        <p class="start-best">내 최고 기록: <span id="lobbyBest">0</span></p>
+        <button class="btn" id="startBtn">게임 시작</button>
+        <section class="skin-panel">
+          <div>퍼즐 조각: <strong><span id="lobbyPieces">0</span></strong></div>
+          <div>현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
+          <div id="nextSkinHint">다음 스킨 해금까지 0개</div>
+          <button class="btn alt" id="openSkinBtn">스킨 보관함</button>
+        </section>
+      </section>
+    </section>
+
+    <section id="skinView" class="view">
+      <section class="start-panel">
+        <div class="skin-view-head">
+          <h2 class="skin-title">스킨 보관함</h2>
+          <div>조각: <strong><span id="skinViewPieces">0</span></strong></div>
+        </div>
+        <div id="skinGrid" class="skin-grid"></div>
+        <div id="skinPagination" class="skin-pagination"></div>
+        <button class="btn" id="backFromSkin">로비로 돌아가기</button>
+      </section>
+    </section>
+
+    <section id="gameView" class="view">
+      <section class="top">
+        <div class="badge">점수: <span id="score">0</span></div>
+        <div class="badge">최고점: <span id="best">0</span></div>
+        <div class="badge">난이도: <span id="difficulty">1</span></div>
+        <div class="badge">조각: <span id="pieces">0</span></div>
+      </section>
+      <div class="notice" id="notice"></div>
+      <canvas id="game" width="480" height="640"></canvas>
+      <button class="btn" id="restart">다시 시작 (R)</button>
+      <button class="btn" id="backLobby">로비로 돌아가기</button>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const lobbyViewEl = document.getElementById("lobbyView");
+    const skinViewEl = document.getElementById("skinView");
+    const gameViewEl = document.getElementById("gameView");
+    const lobbyBestEl = document.getElementById("lobbyBest");
+    const lobbyPiecesEl = document.getElementById("lobbyPieces");
+    const lobbySkinNameEl = document.getElementById("lobbySkinName");
+    const nextSkinHintEl = document.getElementById("nextSkinHint");
+    const openSkinBtn = document.getElementById("openSkinBtn");
+    const skinViewPiecesEl = document.getElementById("skinViewPieces");
+    const skinGridEl = document.getElementById("skinGrid");
+    const skinPaginationEl = document.getElementById("skinPagination");
+    const backFromSkinBtn = document.getElementById("backFromSkin");
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+    const difficultyEl = document.getElementById("difficulty");
+    const piecesEl = document.getElementById("pieces");
+    const noticeEl = document.getElementById("notice");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restart");
+    const backLobbyBtn = document.getElementById("backLobby");
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    const SKINS = [
+      { id: "basic", name: "기본", body: "#A8E6CF", eye: "#142025", unlockPieces: 0, unlockLine: "기본은 언제나 든든한 스타터!" },
+      { id: "sunset", name: "선셋", body: "#FFD166", eye: "#3E2A1E", unlockPieces: 10, unlockLine: "노을빛 입장, 오늘 판 분위기 좋다!" },
+      { id: "mint", name: "민트", body: "#7CE7D4", eye: "#103A44", unlockPieces: 25, unlockLine: "상쾌한 민트 출격, 손이 더 가벼워진다!" },
+      { id: "night", name: "나이트", body: "#94A3FF", eye: "#1F2240", unlockPieces: 45, unlockLine: "밤하늘 모드 해제, 이제 진짜 고수 느낌!" },
+      { id: "cherry", name: "체리", body: "#FF8AAE", eye: "#4B1F2F", unlockPieces: 70, unlockLine: "체리 팡! 화면이 더 달콤해졌다!" },
+      { id: "forest", name: "포레스트", body: "#7CCB5A", eye: "#1C3A24", unlockPieces: 100, unlockLine: "숲속 모드 온, 집중력이 살아난다!" },
+      { id: "ocean", name: "오션", body: "#6CCBFF", eye: "#11394A", unlockPieces: 135, unlockLine: "파도 리듬 탑승, 회피 감각 최대치!" },
+      { id: "volcano", name: "볼케이노", body: "#FF7B4A", eye: "#3D170D", unlockPieces: 175, unlockLine: "화산 코어 점화, 손끝이 뜨거워진다!" }
+    ];
+    const SKINS_PER_PAGE = 4;
+
+    let bestScore = Number(localStorage.getItem("avoid_best") || 0);
+    let puzzlePieces = Number(localStorage.getItem("avoid_pieces") || 0);
+    let unlockedSkins = JSON.parse(localStorage.getItem("avoid_unlocked_skins") || "[\"basic\"]");
+    let selectedSkinId = localStorage.getItem("avoid_selected_skin") || "basic";
+    bestEl.textContent = String(bestScore);
+    lobbyBestEl.textContent = String(bestScore);
+    piecesEl.textContent = String(puzzlePieces);
+    lobbyPiecesEl.textContent = String(puzzlePieces);
+
+    let keys = { left: false, right: false, up: false, down: false };
+    let obstacles = [];
+    let puzzleDrops = [];
+    let score = 0;
+    let gameOver = false;
+    let gameStarted = false;
+    let frame = 0;
+    let difficultyTier = 0;
+    let noticeTimer = null;
+    let skinPage = 1;
+
+    const player = {
+      x: W / 2 - 18,
+      y: H - 62,
+      w: 36,
+      h: 36,
+      speed: 5.2
+    };
+
+    function getSkinById(id) {
+      return SKINS.find((skin) => skin.id === id) || SKINS[0];
+    }
+
+    function ensureSkinState() {
+      const unlockedSet = new Set(unlockedSkins);
+      for (const skin of SKINS) {
+        if (puzzlePieces >= skin.unlockPieces) unlockedSet.add(skin.id);
+      }
+      unlockedSkins = SKINS.map((skin) => skin.id).filter((id) => unlockedSet.has(id));
+      if (!unlockedSkins.includes(selectedSkinId)) selectedSkinId = unlockedSkins[0] || "basic";
+      localStorage.setItem("avoid_unlocked_skins", JSON.stringify(unlockedSkins));
+      localStorage.setItem("avoid_selected_skin", selectedSkinId);
+    }
+
+    function updateSkinLobbyUI() {
+      const currentSkin = getSkinById(selectedSkinId);
+      lobbySkinNameEl.textContent = currentSkin.name;
+      lobbyPiecesEl.textContent = String(puzzlePieces);
+      piecesEl.textContent = String(puzzlePieces);
+      skinViewPiecesEl.textContent = String(puzzlePieces);
+
+      const lockedSkin = SKINS.find((skin) => !unlockedSkins.includes(skin.id));
+      if (!lockedSkin) {
+        nextSkinHintEl.textContent = "모든 스킨을 해금했어요.";
+      } else {
+        const remain = Math.max(0, lockedSkin.unlockPieces - puzzlePieces);
+        nextSkinHintEl.textContent = `다음 스킨: ??? | 문구: ??? | 해금까지 ${remain}개`;
+      }
+    }
+
+    function setActiveView(viewEl) {
+      lobbyViewEl.classList.remove("active");
+      skinViewEl.classList.remove("active");
+      gameViewEl.classList.remove("active");
+      viewEl.classList.add("active");
+    }
+
+    function selectSkin(skinId) {
+      if (!unlockedSkins.includes(skinId)) return;
+      selectedSkinId = skinId;
+      localStorage.setItem("avoid_selected_skin", selectedSkinId);
+      updateSkinLobbyUI();
+      renderSkinGrid();
+    }
+
+    function getSkinPageCount() {
+      return Math.max(1, Math.ceil(SKINS.length / SKINS_PER_PAGE));
+    }
+
+    function renderSkinPagination() {
+      const totalPages = getSkinPageCount();
+      skinPaginationEl.innerHTML = "";
+      for (let p = 1; p <= totalPages; p++) {
+        const btn = document.createElement("button");
+        btn.className = "page-btn" + (p === skinPage ? " active" : "");
+        btn.textContent = String(p);
+        btn.addEventListener("click", () => {
+          skinPage = p;
+          renderSkinGrid();
+        });
+        skinPaginationEl.appendChild(btn);
+      }
+    }
+
+    function renderSkinGrid() {
+      skinGridEl.innerHTML = "";
+      const totalPages = getSkinPageCount();
+      skinPage = Math.max(1, Math.min(skinPage, totalPages));
+      const start = (skinPage - 1) * SKINS_PER_PAGE;
+      const pageSkins = SKINS.slice(start, start + SKINS_PER_PAGE);
+
+      for (const skin of pageSkins) {
+        const unlocked = unlockedSkins.includes(skin.id);
+        const card = document.createElement("article");
+        card.className = "skin-card" + (selectedSkinId === skin.id ? " selected" : "");
+
+        const displayName = unlocked ? skin.name : "???";
+        const displayLine = unlocked ? skin.unlockLine : "???";
+        const chipColor = unlocked ? skin.body : "#c4c9cd";
+        card.innerHTML = `
+          <div><span class="skin-chip" style="background:${chipColor};"></span><strong>${displayName}</strong></div>
+          <div>${displayLine}</div>
+          <button class="mini-btn"${unlocked ? "" : " disabled"}>${selectedSkinId === skin.id ? "선택됨" : (unlocked ? "선택" : "잠김")}</button>
+        `;
+
+        const btn = card.querySelector("button");
+        if (btn && unlocked) {
+          btn.addEventListener("click", () => selectSkin(skin.id));
+        }
+        skinGridEl.appendChild(card);
+      }
+      renderSkinPagination();
+    }
+
+    function openSkinView() {
+      updateSkinLobbyUI();
+      const selectedIndex = SKINS.findIndex((skin) => skin.id === selectedSkinId);
+      if (selectedIndex >= 0) {
+        skinPage = Math.floor(selectedIndex / SKINS_PER_PAGE) + 1;
+      }
+      renderSkinGrid();
+      setActiveView(skinViewEl);
+    }
+
+    function addPuzzlePiece(count = 1) {
+      const prevUnlocked = new Set(unlockedSkins);
+      puzzlePieces += count;
+      localStorage.setItem("avoid_pieces", String(puzzlePieces));
+      ensureSkinState();
+      updateSkinLobbyUI();
+      if (skinViewEl.classList.contains("active")) renderSkinGrid();
+      const newlyUnlocked = SKINS.find((skin) => !prevUnlocked.has(skin.id) && unlockedSkins.includes(skin.id));
+      if (newlyUnlocked) {
+        showDifficultyNotice(newlyUnlocked.unlockLine);
+      }
+    }
+
+    function resetGame() {
+      obstacles = [];
+      puzzleDrops = [];
+      score = 0;
+      gameOver = false;
+      frame = 0;
+      difficultyTier = 0;
+      keys.left = false;
+      keys.right = false;
+      keys.up = false;
+      keys.down = false;
+      player.x = W / 2 - player.w / 2;
+      player.y = H - 62;
+      scoreEl.textContent = "0";
+      difficultyEl.textContent = "1";
+      piecesEl.textContent = String(puzzlePieces);
+      hideDifficultyNotice();
+    }
+
+    function showLobbyView() {
+      lobbyBestEl.textContent = String(bestScore);
+      updateSkinLobbyUI();
+      setActiveView(lobbyViewEl);
+      gameStarted = false;
+      hideDifficultyNotice();
+      keys.left = false;
+      keys.right = false;
+      keys.up = false;
+      keys.down = false;
+    }
+
+    function startGame() {
+      resetGame();
+      setActiveView(gameViewEl);
+      gameStarted = true;
+    }
+
+    function getSpeedTier() {
+      return Math.floor(score / 20);
+    }
+
+    function showDifficultyNotice(text) {
+      noticeEl.textContent = text;
+      noticeEl.classList.add("show");
+      if (noticeTimer) clearTimeout(noticeTimer);
+      noticeTimer = setTimeout(() => {
+        noticeEl.classList.remove("show");
+      }, 1100);
+    }
+
+    function hideDifficultyNotice() {
+      noticeEl.textContent = "";
+      noticeEl.classList.remove("show");
+      if (noticeTimer) {
+        clearTimeout(noticeTimer);
+        noticeTimer = null;
+      }
+    }
+
+    function syncDifficulty() {
+      const nextTier = getSpeedTier();
+      if (nextTier === difficultyTier) return;
+      const prevTier = difficultyTier;
+      difficultyTier = nextTier;
+      difficultyEl.textContent = String(difficultyTier + 1);
+      if (difficultyTier > prevTier) {
+        showDifficultyNotice(`난이도 상승! Lv.${difficultyTier + 1}`);
+      }
+    }
+
+    function spawnTopObstacle() {
+      const min = 22;
+      const max = 60;
+      const size = Math.random() * (max - min) + min;
+      const tier = getSpeedTier();
+      const speed = Math.random() * 2.3 + 2.5 + tier * 0.25;
+      obstacles.push({
+        x: Math.random() * (W - size),
+        y: -size - 6,
+        w: size,
+        h: size,
+        vx: 0,
+        vy: speed
+      });
+    }
+
+    function spawnSideObstacle() {
+      const min = 20;
+      const max = 52;
+      const size = Math.random() * (max - min) + min;
+      const tier = getSpeedTier();
+      const speed = Math.random() * 1.8 + 2.2 + tier * 0.18;
+      const fromLeft = Math.random() < 0.5;
+      obstacles.push({
+        x: fromLeft ? -size - 8 : W + 8,
+        y: Math.random() * (H - size),
+        w: size,
+        h: size,
+        vx: fromLeft ? speed : -speed,
+        vy: 0
+      });
+    }
+
+    function spawnObstacle() {
+      if (score >= 100 && Math.random() < 0.35) {
+        spawnSideObstacle();
+        return;
+      }
+      spawnTopObstacle();
+    }
+
+    function spawnPuzzleDrop() {
+      const size = 16;
+      const tier = getSpeedTier();
+      const speed = 2.2 + tier * 0.14;
+      puzzleDrops.push({
+        x: Math.random() * (W - size),
+        y: -size - 8,
+        w: size,
+        h: size,
+        vy: speed
+      });
+    }
+
+    function isOffScreen(o) {
+      const margin = 24;
+      return (
+        o.x > W + margin ||
+        o.x + o.w < -margin ||
+        o.y > H + margin ||
+        o.y + o.h < -margin
+      );
+    }
+
+    function rectHit(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function update() {
+      if (gameOver || !gameStarted) return;
+      frame++;
+
+      if (keys.left) player.x -= player.speed;
+      if (keys.right) player.x += player.speed;
+      if (keys.up) player.y -= player.speed;
+      if (keys.down) player.y += player.speed;
+      player.x = Math.max(0, Math.min(W - player.w, player.x));
+      player.y = Math.max(0, Math.min(H - player.h, player.y));
+
+      const spawnTerm = Math.max(18, 45 - Math.floor(score / 70));
+      if (frame % spawnTerm === 0) spawnObstacle();
+      if (frame % 95 === 0 && Math.random() < 0.42) spawnPuzzleDrop();
+
+      const speedFactor = 1 + getSpeedTier() * 0.06;
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const o = obstacles[i];
+        o.x += o.vx * speedFactor;
+        o.y += o.vy * speedFactor;
+
+        if (rectHit(player, o)) {
+          gameOver = true;
+          if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem("avoid_best", String(bestScore));
+            bestEl.textContent = String(bestScore);
+            lobbyBestEl.textContent = String(bestScore);
+          }
+          break;
+        }
+
+        if (isOffScreen(o)) {
+          obstacles.splice(i, 1);
+          score++;
+          scoreEl.textContent = String(score);
+        }
+      }
+
+      for (let i = puzzleDrops.length - 1; i >= 0; i--) {
+        const p = puzzleDrops[i];
+        p.y += p.vy;
+
+        if (rectHit(player, p)) {
+          puzzleDrops.splice(i, 1);
+          addPuzzlePiece(1);
+          continue;
+        }
+
+        if (isOffScreen(p)) {
+          puzzleDrops.splice(i, 1);
+        }
+      }
+
+      syncDifficulty();
+    }
+
+    function drawBackground() {
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, "#11202A");
+      grad.addColorStop(1, "#365264");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.1)";
+      for (let i = 0; i < 7; i++) {
+        const y = (frame * 2 + i * 90) % (H + 90) - 90;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y + 10);
+        ctx.stroke();
+      }
+    }
+
+    function drawPlayer() {
+      const skin = getSkinById(selectedSkinId);
+      ctx.fillStyle = skin.body;
+      ctx.fillRect(player.x, player.y, player.w, player.h);
+      ctx.fillStyle = skin.eye;
+      ctx.fillRect(player.x + 8, player.y + 8, 7, 7);
+      ctx.fillRect(player.x + 21, player.y + 8, 7, 7);
+    }
+
+    function drawObstacles() {
+      for (const o of obstacles) {
+        ctx.fillStyle = "#EF6F6C";
+        ctx.fillRect(o.x, o.y, o.w, o.h);
+      }
+    }
+
+    function drawPuzzleDrops() {
+      for (const p of puzzleDrops) {
+        ctx.fillStyle = "#FFD166";
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.fillStyle = "#fff3c4";
+        ctx.fillRect(p.x + 4, p.y + 4, 3, 3);
+        ctx.fillRect(p.x + 9, p.y + 4, 3, 3);
+        ctx.fillRect(p.x + 6, p.y + 9, 4, 4);
+      }
+    }
+
+    function drawGameOver() {
+      if (!gameOver) return;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.font = "bold 40px Trebuchet MS";
+      ctx.fillText("GAME OVER", W / 2, H / 2 - 26);
+      ctx.font = "20px Trebuchet MS";
+      ctx.fillText(`점수: ${score}`, W / 2, H / 2 + 8);
+      ctx.font = "16px Trebuchet MS";
+      ctx.fillText("R 키 또는 버튼으로 재시작", W / 2, H / 2 + 40);
+    }
+
+    function loop() {
+      update();
+      drawBackground();
+      drawPlayer();
+      drawObstacles();
+      drawPuzzleDrops();
+      drawGameOver();
+      requestAnimationFrame(loop);
+    }
+
+    function isLeftKey(e) {
+      return e.code === "ArrowLeft" || e.code === "KeyA" || e.key === "ArrowLeft";
+    }
+
+    function isRightKey(e) {
+      return e.code === "ArrowRight" || e.code === "KeyD" || e.key === "ArrowRight";
+    }
+
+    function isUpKey(e) {
+      return e.code === "ArrowUp" || e.code === "KeyW" || e.key === "ArrowUp";
+    }
+
+    function isDownKey(e) {
+      return e.code === "ArrowDown" || e.code === "KeyS" || e.key === "ArrowDown";
+    }
+
+    function isRestartKey(e) {
+      return e.code === "KeyR" || e.key === "r" || e.key === "R";
+    }
+
+    window.addEventListener("keydown", (e) => {
+      let handled = false;
+      if (isLeftKey(e)) {
+        keys.left = true;
+        handled = true;
+      }
+      if (isRightKey(e)) {
+        keys.right = true;
+        handled = true;
+      }
+      if (isUpKey(e)) {
+        keys.up = true;
+        handled = true;
+      }
+      if (isDownKey(e)) {
+        keys.down = true;
+        handled = true;
+      }
+      if (isRestartKey(e)) {
+        if (gameViewEl.classList.contains("active")) resetGame();
+        if (lobbyViewEl.classList.contains("active")) startGame();
+        handled = true;
+      }
+      if (handled) e.preventDefault();
+    });
+
+    window.addEventListener("keyup", (e) => {
+      let handled = false;
+      if (isLeftKey(e)) {
+        keys.left = false;
+        handled = true;
+      }
+      if (isRightKey(e)) {
+        keys.right = false;
+        handled = true;
+      }
+      if (isUpKey(e)) {
+        keys.up = false;
+        handled = true;
+      }
+      if (isDownKey(e)) {
+        keys.down = false;
+        handled = true;
+      }
+      if (handled) e.preventDefault();
+    });
+
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      keys.left = x < rect.width / 2;
+      keys.right = x >= rect.width / 2;
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      keys.left = x < rect.width / 2;
+      keys.right = x >= rect.width / 2;
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", () => {
+      keys.left = false;
+      keys.right = false;
+      keys.up = false;
+      keys.down = false;
+    });
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+    });
+    backLobbyBtn.addEventListener("click", showLobbyView);
+    backFromSkinBtn.addEventListener("click", showLobbyView);
+    startBtn.addEventListener("click", startGame);
+    openSkinBtn.addEventListener("click", openSkinView);
+
+    ensureSkinState();
+    updateSkinLobbyUI();
+    renderSkinGrid();
+    resetGame();
+    showLobbyView();
+    loop();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" })
+          .then((reg) => reg.update())
+          .catch((err) => {
+            console.error("Service worker registration failed:", err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
