@@ -472,7 +472,7 @@
       isolation: isolate;
       pointer-events: auto;
       position: absolute;
-      left: 12px;
+      left: 0;
       right: 12px;
       bottom: 12px;
       padding: 12px;
@@ -485,8 +485,9 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
-
     .tabbar button {
+      position: relative;
+      z-index: 1;
       border: 0;
       background: transparent;
       color: rgba(233, 236, 255, 0.70);
@@ -501,25 +502,24 @@
 
     .tabbar svg { width: 22px; height: 22px; opacity: 0.85; }
 
-    .tabbar button.active {
+    .tab-indicator {
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 0;
+      width: 60px;
+      border-radius: 18px;
       background: rgba(255, 255, 255, 0.10);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: transform 220ms ease, width 220ms ease;
+      will-change: transform, width;
+      pointer-events: none;
+    }
+    .tabbar button.active {
       color: rgba(233, 236, 255, 0.96);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
     }
 
     .tabbar button.active svg { opacity: 1; }
-
-    .tabbar button { position: relative; }
-
-    .tabbar button.active::before {
-      content: "";
-      position: absolute;
-      inset: 6px 8px 18px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.10);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
-      z-index: -1;
-    }
 
     .app.in-game { padding-bottom: 18px; }
     .app.in-game .tabbar { display: none; }
@@ -636,6 +636,7 @@
     </section>
 
     <nav class="tabbar" aria-label="Navigation">
+      <div class="tab-indicator" aria-hidden="true"></div>
       <button id="tabHome" class="active" aria-current="page" type="button">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.8 12 4l8 6.8v8.4a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 19.2v-8.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.2 21v-7.2h5.6V21" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         Home
@@ -701,6 +702,7 @@
       // During gameplay we keep the height stable; update only in menus.
       const inGame = appEl && appEl.classList.contains('in-game');
       if (!inGame) setAppHeightStable();
+      requestAnimationFrame(updateTabIndicator);
     });
     const lobbyLevelEl = document.getElementById("lobbyLevel");
     const settingsViewEl = document.getElementById("settingsView");
@@ -714,6 +716,21 @@
     const tabGachaBtn = document.getElementById("tabGacha");
     const tabCollectionBtn = document.getElementById("tabCollection");
     const tabSettingsBtn = document.getElementById("tabSettings");
+
+    const tabbarEl = document.querySelector('.tabbar');
+    const tabIndicatorEl = document.querySelector('.tab-indicator');
+
+    function updateTabIndicator() {
+      if (!tabbarEl || !tabIndicatorEl) return;
+      const active = tabbarEl.querySelector('button.active');
+      if (!active) return;
+      const bar = tabbarEl.getBoundingClientRect();
+      const a = active.getBoundingClientRect();
+      const x = Math.round(a.left - bar.left);
+      const w = Math.round(a.width);
+      tabIndicatorEl.style.width = w + 'px';
+      tabIndicatorEl.style.transform = 'translateX(' + x + 'px)';
+    }
 
     const W = canvas.width;
     const H = canvas.height;
@@ -811,6 +828,9 @@
         active.classList.add("active");
         active.setAttribute("aria-current", "page");
       }
+
+
+      requestAnimationFrame(updateTabIndicator);
     }
     const themeMetaEl = document.querySelector('meta[name="theme-color"]');
     const THEME_KEY = 'avoid_theme_mode'; // 'system' | 'dark' | 'light'
@@ -890,6 +910,7 @@
       if (appEl) appEl.classList.toggle("in-game", viewEl === gameViewEl);
       if (viewEl !== gameViewEl) setAppHeightStable();
       setActiveTab(viewEl && viewEl.id ? viewEl.id : "");
+      requestAnimationFrame(updateTabIndicator);
     }
 
     function selectSkin(skinId) {
