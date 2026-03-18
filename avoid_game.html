@@ -528,15 +528,15 @@
       vertical-align: middle;
       margin-right: 6px;
     }
-
-        .tabbar {
-      z-index: 200;
+    .tabbar {
+      z-index: 9999;
       isolation: isolate;
       pointer-events: auto;
-      position: absolute;
-      left: 0;
-      right: 12px;
-      bottom: 12px;
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      width: min(92vw, 420px);
       padding: 12px;
       border-radius: 26px;
       background: rgba(255, 255, 255, 0.07);
@@ -548,6 +548,7 @@
       gap: 10px;
     }
     .tabbar button {
+      touch-action: manipulation;
       position: relative;
       z-index: 1;
       border: 0;
