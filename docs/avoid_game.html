@@ -128,12 +128,12 @@
       justify-content: center;
       margin-bottom: 18px;
     }
-    .mascot {
-      width: 136px;
-      height: 136px;
-      border-radius: 28px;
-      background: transparent;
-      border: 0;
+	    .mascot {
+	      width: 148px;
+	      height: 148px;
+	      border-radius: 28px;
+	      background: transparent;
+	      border: 0;
       display: grid;
       place-items: center;
       position: relative;
@@ -142,45 +142,66 @@
       --skin-eye: #142025;
     }
 
-    .mascot-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
-      background: var(--skin-body);
-      border: 1px solid rgba(0, 0, 0, 0.22);
+	    .mascot-avatar {
+	      width: 86px;
+	      height: 86px;
+	      border-radius: 20px;
+	      background: var(--skin-body);
+	      border: 1px solid rgba(0, 0, 0, 0.22);
       position: relative;
       box-shadow: 0 16px 30px rgba(0, 0, 0, 0.24);
     }
 
-    .mascot-avatar::before,
-    .mascot-avatar::after {
+	    .mascot-avatar::before,
+	    .mascot-avatar::after {
       content: "";
       position: absolute;
-      top: 32px;
-      width: 10px;
-      height: 10px;
+	      top: 34px;
+	      width: 10px;
+	      height: 10px;
       border-radius: 999px;
       background: var(--skin-eye);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
       opacity: 0.95;
     }
 
-    .mascot-avatar::before { left: 24px; }
-    .mascot-avatar::after { right: 24px; }
+	    .mascot-avatar::before { left: 26px; }
+	    .mascot-avatar::after { right: 26px; }
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+	    /* Small mascot used beside the lobby title */
+	    .mascot.mascot--brand {
+	      width: 44px;
+	      height: 44px;
+	      border-radius: 14px;
+	    }
+	    .mascot.mascot--brand .mascot-avatar {
+	      width: 28px;
+	      height: 28px;
+	      border-radius: 10px;
+	      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+	    }
+	    .mascot.mascot--brand .mascot-avatar::before,
+	    .mascot.mascot--brand .mascot-avatar::after {
+	      top: 11px;
+	      width: 4px;
+	      height: 4px;
+	    }
+	    .mascot.mascot--brand .mascot-avatar::before { left: 8px; }
+	    .mascot.mascot--brand .mascot-avatar::after { right: 8px; }
+
+	    .brand {
+	      display: inline-flex;
+	      align-items: center;
+	      justify-content: center;
       gap: 10px;
       margin-bottom: 8px;
       user-select: none;
     }
 
-    .brand-mark {
-      width: 22px;
-      height: 22px;
-      transform: rotate(45deg);
+	    .brand-mark {
+	      width: 22px;
+	      height: 22px;
+	      transform: rotate(45deg);
       border-radius: 6px;
       background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
       border: 1px solid rgba(255,255,255,0.16);
@@ -624,19 +645,17 @@
       vertical-align: middle;
       margin-right: 6px;
     }
-    .tabbar {
-      z-index: 9999;
-      pointer-events: auto;
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: calc(12px + env(safe-area-inset-bottom));
-      max-width: 420px;
-      margin: 0 auto;
-      padding: 12px 18px;
-      border-radius: 26px;
-      background: rgba(15, 18, 32, 0.86);
-      border: 1px solid var(--stroke);
+	    .tabbar {
+	      z-index: 9999;
+	      pointer-events: auto;
+	      position: absolute;
+	      left: 18px;
+	      right: 18px;
+	      bottom: calc(18px + env(safe-area-inset-bottom));
+	      padding: 12px 18px;
+	      border-radius: 26px;
+	      background: rgba(15, 18, 32, 0.86);
+	      border: 1px solid var(--stroke);
       box-shadow: 0 24px 70px rgba(0,0,0,0.55);
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -707,14 +726,15 @@
   </div>
 </div>
 
-<div class="brand">
-            <span class="brand-mark" aria-hidden="true"></span>
-            <span class="brand-name">AVOID</span>
-          </div>
-          <div class="brand-sub">Level <span id="lobbyLevel">1</span></div>
-          <div class="subline">Best <span id="lobbyBest">0</span></div>
-          <div class="hint">현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
-          <div class="hint" id="nextSkinHint">다음 스킨 해금까지 0개</div>
+	<div class="brand">
+	            <div id="lobbyTitleMascot" class="mascot mascot--brand" aria-hidden="true">
+	              <div class="mascot-avatar"></div>
+	            </div>
+	            <span class="brand-name">AVOID</span>
+	          </div>
+	          <div class="subline">Best <span id="lobbyBest">0</span></div>
+	          <div class="hint">현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
+	          <div class="hint" id="nextSkinHint">다음 스킨 해금까지 0개</div>
         </div>
       </div>
 
@@ -845,13 +865,14 @@
     const lobbyViewEl = document.getElementById("lobbyView");
     const skinViewEl = document.getElementById("skinView");
     const gameViewEl = document.getElementById("gameView");
-    const lobbyBestEl = document.getElementById("lobbyBest");
-    const lobbyPiecesEl = document.getElementById("lobbyPieces");
-    const lobbySkinNameEl = document.getElementById("lobbySkinName");
-    const lobbyMascotEl = document.getElementById("lobbyMascot");
-    const nextSkinHintEl = document.getElementById("nextSkinHint");
-    const openSkinBtn = document.getElementById("openSkinBtn");
-    const openGachaBtn = document.getElementById("openGachaBtn");
+	    const lobbyBestEl = document.getElementById("lobbyBest");
+	    const lobbyPiecesEl = document.getElementById("lobbyPieces");
+	    const lobbySkinNameEl = document.getElementById("lobbySkinName");
+	    const lobbyMascotEl = document.getElementById("lobbyMascot");
+	    const lobbyTitleMascotEl = document.getElementById("lobbyTitleMascot");
+	    const nextSkinHintEl = document.getElementById("nextSkinHint");
+	    const openSkinBtn = document.getElementById("openSkinBtn");
+	    const openGachaBtn = document.getElementById("openGachaBtn");
     const gachaViewEl = document.getElementById("gachaView");
     const gachaPiecesEl = document.getElementById("gachaPieces");
     const gachaCostEl = document.getElementById("gachaCost");
@@ -985,27 +1006,32 @@
       localStorage.setItem("avoid_selected_skin", selectedSkinId);
     }
 
-    function updateSkinLobbyUI() {
-      const currentSkin = getSkinById(selectedSkinId);
-      if (lobbyMascotEl) {
-        lobbyMascotEl.style.setProperty("--skin-body", currentSkin.body);
-        lobbyMascotEl.style.setProperty("--skin-eye", currentSkin.eye);
-        lobbyMascotEl.classList.toggle("legendary", currentSkin.rarity === "L");
-      }
-      lobbySkinNameEl.textContent = currentSkin.name;
-      lobbyPiecesEl.textContent = String(puzzlePieces);
-      piecesEl.textContent = String(puzzlePieces);
-      skinViewPiecesEl.textContent = String(puzzlePieces);
+	    function updateSkinLobbyUI() {
+	      const currentSkin = getSkinById(selectedSkinId);
+	      if (lobbyMascotEl) {
+	        lobbyMascotEl.style.setProperty("--skin-body", currentSkin.body);
+	        lobbyMascotEl.style.setProperty("--skin-eye", currentSkin.eye);
+	        lobbyMascotEl.classList.toggle("legendary", currentSkin.rarity === "L");
+	      }
+	      if (lobbyTitleMascotEl) {
+	        lobbyTitleMascotEl.style.setProperty("--skin-body", currentSkin.body);
+	        lobbyTitleMascotEl.style.setProperty("--skin-eye", currentSkin.eye);
+	        lobbyTitleMascotEl.classList.toggle("legendary", currentSkin.rarity === "L");
+	      }
+	      lobbySkinNameEl.textContent = currentSkin.name;
+	      lobbyPiecesEl.textContent = String(puzzlePieces);
+	      piecesEl.textContent = String(puzzlePieces);
+	      skinViewPiecesEl.textContent = String(puzzlePieces);
       if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
 
       const lockedSkin = SKINS.find((skin) => !skin.gachaOnly && !unlockedSkins.includes(skin.id));
-      if (!lockedSkin) {
-        nextSkinHintEl.textContent = "모든 스킨을 해금했어요.";
-      } else {
-        const remain = Math.max(0, lockedSkin.unlockPieces - puzzlePieces);
-        nextSkinHintEl.textContent = `다음 스킨: ??? | 문구: ??? | 해금까지 ${remain}개`;
-      }
-    }
+	      if (!lockedSkin) {
+	        nextSkinHintEl.textContent = "모든 스킨을 해금했어요.";
+	      } else {
+	        const remain = Math.max(0, lockedSkin.unlockPieces - puzzlePieces);
+	        nextSkinHintEl.textContent = `다음 스킨 해금까지 ${remain}개`;
+	      }
+	    }
     function setActiveTab(viewId) {
       const tabs = [tabHomeBtn, tabGachaBtn, tabCollectionBtn, tabSettingsBtn].filter(Boolean);
       for (const t of tabs) {
