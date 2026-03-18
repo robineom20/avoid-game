@@ -434,6 +434,97 @@
       margin-top: 10px;
     }
 
+    .gacha-showcase {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+    }
+
+    .gacha-legendary-grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .legendary-card {
+      position: relative;
+      border-radius: 22px;
+      padding: 14px;
+      border: 2px solid transparent;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) padding-box,
+        linear-gradient(90deg, var(--gold0), #ffd700, var(--gold1), var(--gold0)) border-box;
+      background-size: auto, 260% 100%;
+      animation: legendaryShimmer 2.4s linear infinite;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .legendary-figure {
+      width: 120px;
+      height: 120px;
+      border-radius: 26px;
+      background: rgba(0,0,0,0.18);
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .legendary-avatar {
+      width: 74px;
+      height: 74px;
+      border-radius: 16px;
+      background: var(--skin-body);
+      border: 1px solid rgba(0,0,0,0.22);
+      position: relative;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.30);
+    }
+
+    .legendary-avatar::before,
+    .legendary-avatar::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--skin-eye);
+    }
+
+    .legendary-avatar::before { left: 20px; }
+    .legendary-avatar::after { right: 20px; }
+
+    .legendary-copy .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 950;
+      font-size: 12px;
+      color: #2b1b00;
+      background: linear-gradient(90deg, var(--gold0), #ffd700, var(--gold1));
+      border: 1px solid rgba(0, 0, 0, 0.20);
+    }
+
+    .legendary-copy h3 {
+      margin: 10px 0 6px;
+      font-size: 22px;
+      letter-spacing: -0.3px;
+    }
+
+    .legendary-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 850;
+      line-height: 1.3;
+    }
+
+    @media (max-width: 380px) {
+      .legendary-card { grid-template-columns: 1fr; }
+      .legendary-figure { width: 100%; }
+    }
+
     .skin-pagination {
       display: flex;
       justify-content: center;
@@ -656,10 +747,18 @@
         </div>
       </div>
 
+      <div class="panel gacha-showcase">
+        <div class="skin-view-head">
+          <h2 class="panel-title">레전더리</h2>
+          <div class="muted">가챠에서 낮은 확률로 등장</div>
+        </div>
+        <div id="gachaLegendaryShowcase" class="gacha-legendary-grid"></div>
+      </div>
+
       <div class="panel">
         <div class="skin-view-head">
           <h2 class="panel-title">Gacha</h2>
-          <div class="muted">등급 확률: 레어 80% / 에픽 18% / 레전더리 2%</div>
+          <div class="muted">확률은 Settings에서 확인</div>
         </div>
 
         <div class="muted" style="margin-top: 6px;">이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
@@ -683,6 +782,15 @@
           <button class="seg-btn" id="themeSystem" type="button">자동</button>
           <button class="seg-btn" id="themeDark" type="button">다크</button>
           <button class="seg-btn" id="themeLight" type="button">라이트</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">가챠 확률</h2>
+        <div class="muted" style="margin-top:8px; line-height: 1.35;">
+          레어 <strong><span id="oddsR">0</span>%</strong> /
+          에픽 <strong><span id="oddsE">0</span>%</strong> /
+          레전더리 <strong><span id="oddsL">0</span>%</strong>
         </div>
       </div>
 
@@ -749,6 +857,7 @@
     const gachaCostEl = document.getElementById("gachaCost");
     const gachaPullBtn = document.getElementById("gachaPull");
     const gachaResultEl = document.getElementById("gachaResult");
+    const gachaLegendaryShowcaseEl = document.getElementById("gachaLegendaryShowcase");
     const backFromGachaBtn = document.getElementById("backFromGacha");
     const skinViewPiecesEl = document.getElementById("skinViewPieces");
     const skinGridEl = document.getElementById("skinGrid");
@@ -779,10 +888,16 @@
       const inGame = appEl && appEl.classList.contains('in-game');
       if (!inGame) setAppHeightStable();
       requestAnimationFrame(updateTabIndicator);
+    updateOddsSettingsUI();
+    renderGachaShowcase();
     });
     const lobbyLevelEl = document.getElementById("lobbyLevel");
     const settingsViewEl = document.getElementById("settingsView");
     const resetProgressBtn = document.getElementById("resetProgressBtn");
+
+    const oddsREl = document.getElementById("oddsR");
+    const oddsEEl = document.getElementById("oddsE");
+    const oddsLEl = document.getElementById("oddsL");
 
     const themeSystemBtn = document.getElementById("themeSystem");
     const themeDarkBtn = document.getElementById("themeDark");
@@ -1092,6 +1207,51 @@
       // 10, 20, 30... (pull count starts at 0)
       return 10 * (gachaPullCount + 1);
     }
+    function renderGachaShowcase() {
+      if (!gachaLegendaryShowcaseEl) return;
+      gachaLegendaryShowcaseEl.innerHTML = "";
+      const legendaries = SKINS.filter((s) => s.gachaOnly && s.rarity === "L");
+      if (!legendaries.length) {
+        const msg = document.createElement('div');
+        msg.className = 'muted';
+        msg.textContent = '현재 레전더리 스킨이 없어요.';
+        gachaLegendaryShowcaseEl.appendChild(msg);
+        return;
+      }
+
+      // Show the first legendary big (simple + clean).
+      const s = legendaries[0];
+      const card = document.createElement('div');
+      card.className = 'legendary-card';
+      card.style.setProperty('--skin-body', s.body);
+      card.style.setProperty('--skin-eye', s.eye);
+      card.innerHTML = `
+        <div class="legendary-figure">
+          <div class="legendary-avatar"></div>
+        </div>
+        <div class="legendary-copy">
+          <span class="tag">LEGENDARY</span>
+          <h3>${s.name}</h3>
+          <p>${s.unlockLine}</p>
+        </div>
+      `;
+      gachaLegendaryShowcaseEl.appendChild(card);
+    }
+
+    function updateOddsSettingsUI() {
+      const entries = Object.entries(RARITIES);
+      const total = entries.reduce((sum, [, v]) => sum + v.weight, 0) || 1;
+      function pct(key) {
+        const v = RARITIES[key];
+        if (!v) return 0;
+        return Math.round((v.weight / total) * 100);
+      }
+      if (oddsREl) oddsREl.textContent = String(pct('R'));
+      if (oddsEEl) oddsEEl.textContent = String(pct('E'));
+      if (oddsLEl) oddsLEl.textContent = String(pct('L'));
+    }
+
+
 
     function syncGachaUI() {
       const cost = getGachaCost();
@@ -1103,6 +1263,7 @@
     function openGachaView() {
       updateSkinLobbyUI();
       syncGachaUI();
+      renderGachaShowcase();
       if (gachaResultEl) gachaResultEl.textContent = "";
       setActiveView(gachaViewEl);
     }
