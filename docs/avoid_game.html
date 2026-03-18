@@ -240,6 +240,7 @@
           <div>현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
           <div id="nextSkinHint">다음 스킨 해금까지 0개</div>
           <button class="btn alt" id="openSkinBtn">스킨 보관함</button>
+          <button class="btn alt" id="openGachaBtn">스킨 뽑기</button>
         </section>
       </section>
     </section>
@@ -253,6 +254,22 @@
         <div id="skinGrid" class="skin-grid"></div>
         <div id="skinPagination" class="skin-pagination"></div>
         <button class="btn" id="backFromSkin">로비로 돌아가기</button>
+      </section>
+    </section>
+
+    <section id="gachaView" class="view">
+      <section class="start-panel">
+        <div class="skin-view-head">
+          <h2 class="skin-title">스킨 뽑기</h2>
+          <div>조각: <strong><span id="gachaPieces">0</span></strong></div>
+        </div>
+        <section class="skin-panel">
+          <div>이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
+          <div style="opacity:0.85;">뽑기 전용 스킨은 일정 확률로만 나옵니다.</div>
+          <button class="btn alt" id="gachaPull">1회 뽑기</button>
+          <div id="gachaResult" style="margin-top:10px;font-weight:800;"></div>
+        </section>
+        <button class="btn" id="backFromGacha">로비로 돌아가기</button>
       </section>
     </section>
 
@@ -281,6 +298,13 @@
     const lobbySkinNameEl = document.getElementById("lobbySkinName");
     const nextSkinHintEl = document.getElementById("nextSkinHint");
     const openSkinBtn = document.getElementById("openSkinBtn");
+    const openGachaBtn = document.getElementById("openGachaBtn");
+    const gachaViewEl = document.getElementById("gachaView");
+    const gachaPiecesEl = document.getElementById("gachaPieces");
+    const gachaCostEl = document.getElementById("gachaCost");
+    const gachaPullBtn = document.getElementById("gachaPull");
+    const gachaResultEl = document.getElementById("gachaResult");
+    const backFromGachaBtn = document.getElementById("backFromGacha");
     const skinViewPiecesEl = document.getElementById("skinViewPieces");
     const skinGridEl = document.getElementById("skinGrid");
     const skinPaginationEl = document.getElementById("skinPagination");
@@ -305,7 +329,10 @@
       { id: "cherry", name: "체리", body: "#FF8AAE", eye: "#4B1F2F", unlockPieces: 70, unlockLine: "체리 팡! 화면이 더 달콤해졌다!" },
       { id: "forest", name: "포레스트", body: "#7CCB5A", eye: "#1C3A24", unlockPieces: 100, unlockLine: "숲속 모드 온, 집중력이 살아난다!" },
       { id: "ocean", name: "오션", body: "#6CCBFF", eye: "#11394A", unlockPieces: 135, unlockLine: "파도 리듬 탑승, 회피 감각 최대치!" },
-      { id: "volcano", name: "볼케이노", body: "#FF7B4A", eye: "#3D170D", unlockPieces: 175, unlockLine: "화산 코어 점화, 손끝이 뜨거워진다!" }
+      { id: "volcano", name: "볼케이노", body: "#FF7B4A", eye: "#3D170D", unlockPieces: 175, unlockLine: "화산 코어 점화, 손끝이 뜨거워진다!" },
+      { id: "aurora", name: "오로라", body: "#7AF0FF", eye: "#093340", unlockPieces: 999999, gachaOnly: true, unlockLine: "오로라 스킨 등장, 화면이 반짝인다!" },
+      { id: "gold", name: "골드", body: "#F6D365", eye: "#3A2A12", unlockPieces: 999999, gachaOnly: true, unlockLine: "골드 스킨 획득! 오늘 운이 미쳤다." },
+      { id: "glitch", name: "글리치", body: "#C77DFF", eye: "#1E1233", unlockPieces: 999999, gachaOnly: true, unlockLine: "글리치 모드 ON, 픽셀이 춤춘다." }
     ];
     const SKINS_PER_PAGE = 4;
 
@@ -313,6 +340,7 @@
     let puzzlePieces = Number(localStorage.getItem("avoid_pieces") || 0);
     let unlockedSkins = JSON.parse(localStorage.getItem("avoid_unlocked_skins") || "[\"basic\"]");
     let selectedSkinId = localStorage.getItem("avoid_selected_skin") || "basic";
+    let gachaPullCount = Number(localStorage.getItem("avoid_gacha_pulls") || 0);
     bestEl.textContent = String(bestScore);
     lobbyBestEl.textContent = String(bestScore);
     piecesEl.textContent = String(puzzlePieces);
@@ -344,7 +372,7 @@
     function ensureSkinState() {
       const unlockedSet = new Set(unlockedSkins);
       for (const skin of SKINS) {
-        if (puzzlePieces >= skin.unlockPieces) unlockedSet.add(skin.id);
+        if (!skin.gachaOnly && puzzlePieces >= skin.unlockPieces) unlockedSet.add(skin.id);
       }
       unlockedSkins = SKINS.map((skin) => skin.id).filter((id) => unlockedSet.has(id));
       if (!unlockedSkins.includes(selectedSkinId)) selectedSkinId = unlockedSkins[0] || "basic";
@@ -358,8 +386,9 @@
       lobbyPiecesEl.textContent = String(puzzlePieces);
       piecesEl.textContent = String(puzzlePieces);
       skinViewPiecesEl.textContent = String(puzzlePieces);
+      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
 
-      const lockedSkin = SKINS.find((skin) => !unlockedSkins.includes(skin.id));
+      const lockedSkin = SKINS.find((skin) => !skin.gachaOnly && !unlockedSkins.includes(skin.id));
       if (!lockedSkin) {
         nextSkinHintEl.textContent = "모든 스킨을 해금했어요.";
       } else {
@@ -371,6 +400,7 @@
     function setActiveView(viewEl) {
       lobbyViewEl.classList.remove("active");
       skinViewEl.classList.remove("active");
+      gachaViewEl.classList.remove("active");
       gameViewEl.classList.remove("active");
       viewEl.classList.add("active");
     }
@@ -431,6 +461,79 @@
       }
       renderSkinPagination();
     }
+
+    const DUPLICATE_REFUND = 3;
+
+    function getGachaCost() {
+      return (gachaPullCount + 1) * 10;
+    }
+
+    function syncGachaUI() {
+      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
+      if (gachaCostEl) gachaCostEl.textContent = String(getGachaCost());
+      if (gachaPullBtn) gachaPullBtn.textContent = `1회 뽑기 (${getGachaCost()} 조각)`;
+    }
+
+    const GACHA_POOL = [
+      { id: "aurora", weight: 6 },
+      { id: "glitch", weight: 3 },
+      { id: "gold", weight: 1 }
+    ];
+
+    function pickGachaId() {
+      const total = GACHA_POOL.reduce((sum, it) => sum + it.weight, 0);
+      let r = Math.random() * total;
+      for (const it of GACHA_POOL) {
+        r -= it.weight;
+        if (r <= 0) return it.id;
+      }
+      return GACHA_POOL[GACHA_POOL.length - 1].id;
+    }
+
+    function openGachaView() {
+      updateSkinLobbyUI();
+      syncGachaUI();
+      if (gachaResultEl) gachaResultEl.textContent = "";
+      setActiveView(gachaViewEl);
+    }
+
+    function pullGachaOnce() {
+      const cost = getGachaCost();
+      if (puzzlePieces < cost) {
+        if (gachaResultEl) gachaResultEl.textContent = "조각이 부족해요.";
+        showDifficultyNotice("조각이 부족해요.");
+        syncGachaUI();
+        return;
+      }
+
+      puzzlePieces -= cost;
+      gachaPullCount += 1;
+      localStorage.setItem("avoid_gacha_pulls", String(gachaPullCount));
+      localStorage.setItem("avoid_pieces", String(puzzlePieces));
+
+      const id = pickGachaId();
+      const skin = getSkinById(id);
+
+      if (!unlockedSkins.includes(id)) {
+        unlockedSkins.push(id);
+        localStorage.setItem("avoid_unlocked_skins", JSON.stringify(unlockedSkins));
+        ensureSkinState();
+        updateSkinLobbyUI();
+        renderSkinGrid();
+        if (gachaResultEl) gachaResultEl.textContent = `획득! ${skin.name}`;
+        showDifficultyNotice(skin.unlockLine);
+      } else {
+        puzzlePieces += DUPLICATE_REFUND;
+        localStorage.setItem("avoid_pieces", String(puzzlePieces));
+        updateSkinLobbyUI();
+        if (gachaResultEl) gachaResultEl.textContent = `중복! 조각 +${DUPLICATE_REFUND}`;
+        showDifficultyNotice(`중복! 조각 +${DUPLICATE_REFUND}`);
+      }
+
+      syncGachaUI();
+      if (skinViewEl.classList.contains("active")) renderSkinGrid();
+    }
+
 
     function openSkinView() {
       updateSkinLobbyUI();
@@ -843,6 +946,9 @@
     backFromSkinBtn.addEventListener("click", showLobbyView);
     startBtn.addEventListener("click", startGame);
     openSkinBtn.addEventListener("click", openSkinView);
+    openGachaBtn.addEventListener("click", openGachaView);
+    backFromGachaBtn.addEventListener("click", showLobbyView);
+    gachaPullBtn.addEventListener("click", pullGachaOnce);
 
     ensureSkinState();
     updateSkinLobbyUI();
