@@ -54,7 +54,7 @@
       box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
       overflow: hidden;
       position: relative;
-      padding: 18px 18px calc(18px + 84px + env(safe-area-inset-bottom));
+      padding: 18px 18px calc(18px + 104px + env(safe-area-inset-bottom));
       backdrop-filter: blur(10px);
     }
 
@@ -110,30 +110,13 @@
       box-shadow: 0 10px 26px rgba(91, 120, 255, 0.20);
     }
 
-        .brand-name {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 4px;
-      font-size: 54px;
+            .brand-name {
+      font-size: 46px;
       font-weight: 950;
       letter-spacing: -0.9px;
       line-height: 1.0;
     }
 
-    .brand-a {
-      width: 34px;
-      height: 30px;
-      margin-right: 2px;
-      display: inline-block;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      background: linear-gradient(180deg, rgba(233,236,255,0.95), rgba(233,236,255,0.72));
-      filter: drop-shadow(0 14px 36px rgba(91, 120, 255, 0.25));
-      transform: translateY(2px);
-    }
-
-    .brand-rest {
-      color: rgba(233, 236, 255, 0.96);
-    }
 
     .brand-sub {
       font-size: 20px;
@@ -170,6 +153,8 @@
       background: linear-gradient(90deg, #4f6bff, #5b86ff);
       box-shadow: 0 22px 60px rgba(91, 120, 255, 0.32);
       cursor: pointer;
+    
+      margin-bottom: 18px;
     }
 
     .cta:active { transform: translateY(1px); }
@@ -395,6 +380,7 @@
     }
 
         .tabbar {
+      z-index: 50;
       position: absolute;
       left: 12px;
       right: 12px;
@@ -468,7 +454,8 @@
       <div class="center">
         <div>
           <div class="brand">
-            <span class="brand-name"><span class="brand-a" aria-hidden="true"></span><span class="brand-rest">rrows</span></span>
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-name">AVOID</span>
           </div>
           <div class="brand-sub">Level <span id="lobbyLevel">1</span></div>
           <div class="subline">Best <span id="lobbyBest">0</span></div>
