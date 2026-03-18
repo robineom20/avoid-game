@@ -89,6 +89,8 @@
     .view { display: none; height: 100%; position: relative; z-index: 1; }
     .view.active { display: flex; flex-direction: column; gap: 14px; }
 
+    #gameView.view.active { gap: 8px; }
+
     #gameView { min-height: 0; }
 
     .hud {
@@ -312,25 +314,28 @@
       opacity: 0.45;
       cursor: not-allowed;
     }
-
     .notice {
       text-align: center;
       font-weight: 950;
       color: rgba(15, 18, 32, 0.96);
-      background: linear-gradient(90deg, rgba(255, 211, 107, 0.95), rgba(255, 239, 179, 0.92));
-      border: 1px solid rgba(0, 0, 0, 0.20);
       border-radius: 999px;
-      padding: 10px 14px;
       opacity: 0;
       transform: translateY(-6px);
       transition: opacity 180ms ease, transform 180ms ease;
       pointer-events: none;
-      min-height: 40px;
+      height: 0;
+      padding: 0;
+      overflow: hidden;
     }
 
     .notice.show {
+      height: auto;
+      padding: 10px 14px;
       opacity: 1;
       transform: translateY(0);
+      background: linear-gradient(90deg, rgba(255, 211, 107, 0.95), rgba(255, 239, 179, 0.92));
+      border: 1px solid rgba(0, 0, 0, 0.20);
+      min-height: 40px;
     }
     .game-hud {
       width: 100%;
@@ -356,7 +361,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--stroke);
@@ -369,14 +374,14 @@
     .hud-chip span {
       color: var(--muted);
       font-weight: 850;
-      font-size: 12px;
+      font-size: 13px;
       letter-spacing: 0.1px;
     }
 
     .hud-chip strong {
       display: inline-block;
       min-width: 2ch;
-      font-size: 15px;
+      font-size: 17px;
       font-variant-numeric: tabular-nums;
       font-feature-settings: 'tnum' 1;
     }
