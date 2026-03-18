@@ -1,4 +1,4 @@
-const CACHE_NAME = "avoid-game-20260318180116";
+const CACHE_NAME = "avoid-game-20260318180248";
 const ASSETS = [
   "./",
   "./index.html",

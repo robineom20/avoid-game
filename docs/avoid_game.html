@@ -487,15 +487,30 @@
       overflow: hidden;
     }
 
-    .legendary-figure {
-      width: 120px;
-      height: 120px;
-      border-radius: 26px;
-      background: rgba(0,0,0,0.18);
-      display: grid;
-      place-items: center;
-      position: relative;
-    }
+	    .legendary-figure {
+	      width: 120px;
+	      height: 120px;
+	      border-radius: 26px;
+	      background: rgba(0,0,0,0.18);
+	      display: grid;
+	      place-items: center;
+	      position: relative;
+	    }
+
+	    .legendary-unknown {
+	      width: 74px;
+	      height: 74px;
+	      border-radius: 16px;
+	      display: grid;
+	      place-items: center;
+	      font-weight: 950;
+	      font-size: 42px;
+	      letter-spacing: -0.6px;
+	      color: rgba(233, 236, 255, 0.92);
+	      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+	      border: 1px solid rgba(255, 255, 255, 0.12);
+	      box-shadow: 0 18px 40px rgba(0,0,0,0.30);
+	    }
 
     .legendary-avatar {
       width: 74px;
@@ -1242,10 +1257,10 @@
 	    function getGachaCost() {
 	      return 30;
 	    }
-    function renderGachaShowcase() {
-      if (!gachaLegendaryShowcaseEl) return;
-      gachaLegendaryShowcaseEl.innerHTML = "";
-      const legendaries = SKINS.filter((s) => s.gachaOnly && s.rarity === "L");
+	    function renderGachaShowcase() {
+	      if (!gachaLegendaryShowcaseEl) return;
+	      gachaLegendaryShowcaseEl.innerHTML = "";
+	      const legendaries = SKINS.filter((s) => s.gachaOnly && s.rarity === "L");
       if (!legendaries.length) {
         const msg = document.createElement('div');
         msg.className = 'muted';
@@ -1254,15 +1269,12 @@
         return;
       }
 
-      // Show the first legendary big (simple + clean).
-      const s = legendaries[0];
-      const card = document.createElement('div');
-      card.className = 'legendary-card';
-	      card.style.setProperty('--skin-body', s.body);
-	      card.style.setProperty('--skin-eye', s.eye);
+	      // Keep legendary identity hidden in gacha showcase.
+	      const card = document.createElement('div');
+	      card.className = 'legendary-card';
 	      card.innerHTML = `
 	        <div class="legendary-figure">
-	          <div class="legendary-avatar"></div>
+	          <div class="legendary-unknown">?</div>
 	        </div>
 	        <div class="legendary-copy">
 	          <span class="tag">LEGENDARY</span>
