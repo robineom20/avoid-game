@@ -73,7 +73,7 @@
 
     .app {
       width: min(92vw, 420px);
-      height: min(92vh, 860px);
+      height: min(var(--appVhPx, 92vh), 860px);
       background:
         radial-gradient(900px 900px at 50% -10%, rgba(255, 255, 255, 0.06), transparent 55%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
@@ -86,7 +86,7 @@
       backdrop-filter: blur(10px);
     }
 
-    .view { display: none; height: 100%; }
+    .view { display: none; height: 100%; position: relative; z-index: 1; }
     .view.active { display: flex; flex-direction: column; gap: 14px; }
 
     #gameView { min-height: 0; }
@@ -326,9 +326,10 @@
       display: flex;
     }
 
-    .game-stage canvas {
+        .game-stage canvas {
       width: 100%;
-      height: 100%;
+      height: auto;
+      max-height: 100%;
       aspect-ratio: 3 / 4;
     }
 
@@ -458,7 +459,9 @@
     }
 
         .tabbar {
-      z-index: 50;
+      z-index: 200;
+      isolation: isolate;
+      pointer-events: auto;
       position: absolute;
       left: 12px;
       right: 12px;
@@ -676,6 +679,21 @@
     const backLobbyBtn = document.getElementById("backLobby");
 
     const appEl = document.querySelector(".app");
+
+    function setAppHeightStable() {
+      // Lock app height to current viewport px to avoid mid-game jumps (address bar show/hide).
+      const h = Math.max(520, Math.floor(window.innerHeight * 0.92));
+      document.documentElement.style.setProperty('--appVhPx', h + 'px');
+    }
+
+    // Initialize early
+    setAppHeightStable();
+
+    window.addEventListener('resize', () => {
+      // During gameplay we keep the height stable; update only in menus.
+      const inGame = appEl && appEl.classList.contains('in-game');
+      if (!inGame) setAppHeightStable();
+    });
     const lobbyLevelEl = document.getElementById("lobbyLevel");
     const settingsViewEl = document.getElementById("settingsView");
     const resetProgressBtn = document.getElementById("resetProgressBtn");
@@ -862,6 +880,7 @@
       if (viewEl && viewEl.classList) viewEl.classList.add("active");
 
       if (appEl) appEl.classList.toggle("in-game", viewEl === gameViewEl);
+      if (viewEl !== gameViewEl) setAppHeightStable();
       setActiveTab(viewEl && viewEl.id ? viewEl.id : "");
     }
 
