@@ -266,6 +266,7 @@
         <section class="skin-panel">
           <div>이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
           <div style="opacity:0.85;">뽑기 전용 스킨은 일정 확률로만 나옵니다.</div>
+          <div id="gachaOdds" style="opacity:0.85;">등급 확률: 레어 80% / 에픽 18% / 레전더리 2%</div>
           <button class="btn alt" id="gachaPull">1회 뽑기</button>
           <div id="gachaResult" style="margin-top:10px;font-weight:800;"></div>
         </section>
@@ -330,9 +331,9 @@
       { id: "forest", name: "포레스트", body: "#7CCB5A", eye: "#1C3A24", unlockPieces: 100, unlockLine: "숲속 모드 온, 집중력이 살아난다!" },
       { id: "ocean", name: "오션", body: "#6CCBFF", eye: "#11394A", unlockPieces: 135, unlockLine: "파도 리듬 탑승, 회피 감각 최대치!" },
       { id: "volcano", name: "볼케이노", body: "#FF7B4A", eye: "#3D170D", unlockPieces: 175, unlockLine: "화산 코어 점화, 손끝이 뜨거워진다!" },
-      { id: "aurora", name: "오로라", body: "#7AF0FF", eye: "#093340", unlockPieces: 999999, gachaOnly: true, unlockLine: "오로라 스킨 등장, 화면이 반짝인다!" },
-      { id: "gold", name: "골드", body: "#F6D365", eye: "#3A2A12", unlockPieces: 999999, gachaOnly: true, unlockLine: "골드 스킨 획득! 오늘 운이 미쳤다." },
-      { id: "glitch", name: "글리치", body: "#C77DFF", eye: "#1E1233", unlockPieces: 999999, gachaOnly: true, unlockLine: "글리치 모드 ON, 픽셀이 춤춘다." }
+      { id: "aurora", name: "오로라", body: "#7AF0FF", eye: "#093340", unlockPieces: 999999, gachaOnly: true, rarity: "R", unlockLine: "오로라 스킨 등장, 화면이 반짝인다!" },
+      { id: "gold", name: "골드", body: "#F6D365", eye: "#3A2A12", unlockPieces: 999999, gachaOnly: true, rarity: "L", unlockLine: "골드 스킨 획득! 오늘 운이 미쳤다." },
+      { id: "glitch", name: "글리치", body: "#C77DFF", eye: "#1E1233", unlockPieces: 999999, gachaOnly: true, rarity: "E", unlockLine: "글리치 모드 ON, 픽셀이 춤춘다." }
     ];
     const SKINS_PER_PAGE = 4;
 
@@ -461,33 +462,40 @@
       }
       renderSkinPagination();
     }
+    const RARITIES = {
+      R: { name: "레어", weight: 80, dupRefund: 6 },
+      E: { name: "에픽", weight: 18, dupRefund: 12 },
+      L: { name: "레전더리", weight: 2, dupRefund: 25 }
+    };
 
-    const DUPLICATE_REFUND = 3;
-
-    function getGachaCost() {
-      return (gachaPullCount + 1) * 10;
+    function pickRarity() {
+      const entries = Object.entries(RARITIES);
+      const total = entries.reduce((sum, [, v]) => sum + v.weight, 0);
+      let r = Math.random() * total;
+      for (const [key, v] of entries) {
+        r -= v.weight;
+        if (r <= 0) return key;
+      }
+      return entries[entries.length - 1][0];
     }
 
-    function syncGachaUI() {
-      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
-      if (gachaCostEl) gachaCostEl.textContent = String(getGachaCost());
-      if (gachaPullBtn) gachaPullBtn.textContent = `1회 뽑기 (${getGachaCost()} 조각)`;
+    function getRarityName(skin) {
+      const key = skin && skin.rarity ? skin.rarity : "R";
+      return (RARITIES[key] && RARITIES[key].name) || "레어";
     }
 
-    const GACHA_POOL = [
-      { id: "aurora", weight: 6 },
-      { id: "glitch", weight: 3 },
-      { id: "gold", weight: 1 }
-    ];
+    function getDuplicateRefund(skin) {
+      const key = skin && skin.rarity ? skin.rarity : "R";
+      return (RARITIES[key] && RARITIES[key].dupRefund) || 3;
+    }
 
     function pickGachaId() {
-      const total = GACHA_POOL.reduce((sum, it) => sum + it.weight, 0);
-      let r = Math.random() * total;
-      for (const it of GACHA_POOL) {
-        r -= it.weight;
-        if (r <= 0) return it.id;
-      }
-      return GACHA_POOL[GACHA_POOL.length - 1].id;
+      const rarity = pickRarity();
+      const pool = SKINS.filter((s) => s.gachaOnly && s.rarity === rarity);
+      const fallback = SKINS.filter((s) => s.gachaOnly);
+      const list = pool.length ? pool : fallback;
+      if (!list.length) return "basic";
+      return list[Math.floor(Math.random() * list.length)].id;
     }
 
     function openGachaView() {
@@ -520,14 +528,15 @@
         ensureSkinState();
         updateSkinLobbyUI();
         renderSkinGrid();
-        if (gachaResultEl) gachaResultEl.textContent = `획득! ${skin.name}`;
+        if (gachaResultEl) gachaResultEl.textContent = `획득! (${getRarityName(skin)}) ${skin.name}`;
         showDifficultyNotice(skin.unlockLine);
       } else {
-        puzzlePieces += DUPLICATE_REFUND;
+        const refund = getDuplicateRefund(skin);
+        puzzlePieces += refund;
         localStorage.setItem("avoid_pieces", String(puzzlePieces));
         updateSkinLobbyUI();
-        if (gachaResultEl) gachaResultEl.textContent = `중복! 조각 +${DUPLICATE_REFUND}`;
-        showDifficultyNotice(`중복! 조각 +${DUPLICATE_REFUND}`);
+        if (gachaResultEl) gachaResultEl.textContent = `중복! (${getRarityName(skin)}) 조각 +${refund}`;
+        showDifficultyNotice(`중복! (${getRarityName(skin)}) 조각 +${refund}`);
       }
 
       syncGachaUI();
