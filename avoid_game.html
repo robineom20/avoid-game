@@ -452,13 +452,12 @@
         nextSkinHintEl.textContent = `다음 스킨: ??? | 문구: ??? | 해금까지 ${remain}개`;
       }
     }
-
     function setActiveView(viewEl) {
-      lobbyViewEl.classList.remove("active");
-      skinViewEl.classList.remove("active");
-      gachaViewEl.classList.remove("active");
-      gameViewEl.classList.remove("active");
-      viewEl.classList.add("active");
+      const views = [lobbyViewEl, skinViewEl, gachaViewEl, gameViewEl];
+      for (const v of views) {
+        if (v && v.classList) v.classList.remove("active");
+      }
+      if (viewEl && viewEl.classList) viewEl.classList.add("active");
     }
 
     function selectSkin(skinId) {
@@ -552,6 +551,18 @@
       const list = pool.length ? pool : fallback;
       if (!list.length) return "basic";
       return list[Math.floor(Math.random() * list.length)].id;
+    }
+
+    function getGachaCost() {
+      // 10, 20, 30... (pull count starts at 0)
+      return 10 * (gachaPullCount + 1);
+    }
+
+    function syncGachaUI() {
+      const cost = getGachaCost();
+      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
+      if (gachaCostEl) gachaCostEl.textContent = String(cost);
+      if (gachaPullBtn) gachaPullBtn.disabled = puzzlePieces < cost;
     }
 
     function openGachaView() {
@@ -1046,17 +1057,18 @@
       keys.up = false;
       keys.down = false;
     });
-
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-    });
-    backLobbyBtn.addEventListener("click", showLobbyView);
-    backFromSkinBtn.addEventListener("click", showLobbyView);
-    startBtn.addEventListener("click", startGame);
-    openSkinBtn.addEventListener("click", openSkinView);
-    openGachaBtn.addEventListener("click", openGachaView);
-    backFromGachaBtn.addEventListener("click", showLobbyView);
-    gachaPullBtn.addEventListener("click", pullGachaOnce);
+    if (restartBtn) {
+      restartBtn.addEventListener("click", () => {
+        resetGame();
+      });
+    }
+    if (backLobbyBtn) backLobbyBtn.addEventListener("click", showLobbyView);
+    if (backFromSkinBtn) backFromSkinBtn.addEventListener("click", showLobbyView);
+    if (startBtn) startBtn.addEventListener("click", startGame);
+    if (openSkinBtn) openSkinBtn.addEventListener("click", openSkinView);
+    if (openGachaBtn) openGachaBtn.addEventListener("click", openGachaView);
+    if (backFromGachaBtn) backFromGachaBtn.addEventListener("click", showLobbyView);
+    if (gachaPullBtn) gachaPullBtn.addEventListener("click", pullGachaOnce);
 
     ensureSkinState();
     updateSkinLobbyUI();
