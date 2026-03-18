@@ -27,6 +27,24 @@
       --gold1: #ffefb3;
     }
 
+    :root[data-theme="light"] {
+      --bg0: #f4f6ff;
+      --bg1: #eef2ff;
+      --bg2: #ffffff;
+      --surface: rgba(17, 24, 39, 0.05);
+      --surface2: rgba(17, 24, 39, 0.07);
+      --stroke: rgba(17, 24, 39, 0.12);
+      --stroke2: rgba(17, 24, 39, 0.18);
+      --text: #0b1220;
+      --muted: rgba(11, 18, 32, 0.70);
+      --muted2: rgba(11, 18, 32, 0.46);
+      --primary: #3f5bff;
+      --primary2: #2f8cff;
+      --danger: #e11d48;
+      --gold0: #e2b44f;
+      --gold1: #fff0c2;
+    }
+
     * { box-sizing: border-box; }
 
     body {
@@ -59,7 +77,7 @@
       background:
         radial-gradient(900px 900px at 50% -10%, rgba(255, 255, 255, 0.06), transparent 55%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-      border: 1px solid rgba(255, 255, 255, 0.10);
+      border: 1px solid var(--stroke);
       border-radius: 28px;
       box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
       overflow: hidden;
@@ -197,6 +215,32 @@
       font-size: 14px;
       font-weight: 850;
       cursor: pointer;
+    }
+
+    .seg {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .seg-btn {
+      border: 1px solid var(--stroke);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 10px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    :root[data-theme="light"] .seg-btn {
+      background: rgba(17, 24, 39, 0.04);
+    }
+
+    .seg-btn.active {
+      background: rgba(91, 120, 255, 0.18);
+      border-color: rgba(91, 120, 255, 0.35);
     }
 
     .btn.alt {
@@ -422,7 +466,7 @@
       padding: 12px;
       border-radius: 26px;
       background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.11);
+      border: 1px solid var(--stroke);
       backdrop-filter: blur(16px);
       box-shadow: 0 24px 70px rgba(0,0,0,0.55);
       display: grid;
@@ -545,6 +589,17 @@
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 10.8v5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 7.2h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
           <strong>Settings</strong>
         </div>
+
+      <div class="panel">
+        <h2 class="panel-title">테마</h2>
+        <div class="muted" style="margin-top:8px; line-height: 1.35;">기기 설정(자동) 또는 다크/라이트를 선택할 수 있어요.</div>
+        <div class="seg" role="group" aria-label="Theme">
+          <button class="seg-btn" id="themeSystem" type="button">자동</button>
+          <button class="seg-btn" id="themeDark" type="button">다크</button>
+          <button class="seg-btn" id="themeLight" type="button">라이트</button>
+        </div>
+      </div>
+
       </div>
 
       <div class="panel">
@@ -624,6 +679,10 @@
     const lobbyLevelEl = document.getElementById("lobbyLevel");
     const settingsViewEl = document.getElementById("settingsView");
     const resetProgressBtn = document.getElementById("resetProgressBtn");
+
+    const themeSystemBtn = document.getElementById("themeSystem");
+    const themeDarkBtn = document.getElementById("themeDark");
+    const themeLightBtn = document.getElementById("themeLight");
 
     const tabHomeBtn = document.getElementById("tabHome");
     const tabGachaBtn = document.getElementById("tabGacha");
@@ -727,6 +786,54 @@
         active.setAttribute("aria-current", "page");
       }
     }
+    const themeMetaEl = document.querySelector('meta[name="theme-color"]');
+    const THEME_KEY = 'avoid_theme_mode'; // 'system' | 'dark' | 'light'
+
+    function getSystemTheme() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+
+    function setThemeButtons(mode) {
+      const btns = [themeSystemBtn, themeDarkBtn, themeLightBtn].filter(Boolean);
+      for (const b of btns) b.classList.remove('active');
+      if (mode === 'system' && themeSystemBtn) themeSystemBtn.classList.add('active');
+      if (mode === 'dark' && themeDarkBtn) themeDarkBtn.classList.add('active');
+      if (mode === 'light' && themeLightBtn) themeLightBtn.classList.add('active');
+    }
+
+    function applyThemeMode(mode) {
+      const root = document.documentElement;
+      const resolved = mode === 'system' ? getSystemTheme() : mode;
+      if (mode === 'system') {
+        root.removeAttribute('data-theme');
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+      // theme-color for browser UI
+      if (themeMetaEl) themeMetaEl.setAttribute('content', resolved === 'light' ? '#eef2ff' : '#0f1220');
+      setThemeButtons(mode);
+    }
+
+    function loadThemeMode() {
+      const saved = localStorage.getItem(THEME_KEY) || 'system';
+      applyThemeMode(saved);
+      return saved;
+    }
+
+    function saveThemeMode(mode) {
+      localStorage.setItem(THEME_KEY, mode);
+      applyThemeMode(mode);
+    }
+
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-color-scheme: light)');
+      // When in system mode, react to system changes
+      mq.addEventListener && mq.addEventListener('change', () => {
+        const saved = localStorage.getItem(THEME_KEY) || 'system';
+        if (saved === 'system') applyThemeMode('system');
+      });
+    }
+
 
     function openSettingsView() {
       updateSkinLobbyUI();
@@ -896,6 +1003,12 @@
     if (tabCollectionBtn) tabCollectionBtn.addEventListener("click", openSkinView);
     if (tabSettingsBtn) tabSettingsBtn.addEventListener("click", openSettingsView);
     if (resetProgressBtn) resetProgressBtn.addEventListener("click", resetProgress);
+
+    if (themeSystemBtn) themeSystemBtn.addEventListener('click', () => saveThemeMode('system'));
+    if (themeDarkBtn) themeDarkBtn.addEventListener('click', () => saveThemeMode('dark'));
+    if (themeLightBtn) themeLightBtn.addEventListener('click', () => saveThemeMode('light'));
+
+    loadThemeMode();
     ensureSkinState();
         updateSkinLobbyUI();
         renderSkinGrid();
