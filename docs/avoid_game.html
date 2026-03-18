@@ -785,11 +785,14 @@
           <div class="muted">확률은 Settings에서 확인</div>
         </div>
 
-        <div class="muted" style="margin-top: 6px;">이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
-        <button class="btn alt" id="gachaPull" style="margin-top: 12px;">1회 뽑기</button>
-        <div id="gachaResult" style="margin-top:12px;font-weight:950;"></div>
-      </div>
-    </section>
+	        <div class="muted" style="margin-top: 6px;">이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
+	        <div style="display:flex; gap:10px; margin-top:12px;">
+	          <button class="btn alt" id="gachaPull" style="flex:1;">1회 뽑기</button>
+	          <button class="btn" id="gachaPull10" style="flex:1;">10회 뽑기</button>
+	        </div>
+	        <div id="gachaResult" style="margin-top:12px;font-weight:950;"></div>
+	      </div>
+	    </section>
 
     <section id="settingsView" class="view">
       <div class="hud">
@@ -881,11 +884,12 @@
 	    const openGachaBtn = document.getElementById("openGachaBtn");
     const gachaViewEl = document.getElementById("gachaView");
     const gachaPiecesEl = document.getElementById("gachaPieces");
-    const gachaCostEl = document.getElementById("gachaCost");
-    const gachaPullBtn = document.getElementById("gachaPull");
-    const gachaResultEl = document.getElementById("gachaResult");
-    const gachaLegendaryShowcaseEl = document.getElementById("gachaLegendaryShowcase");
-    const backFromGachaBtn = document.getElementById("backFromGacha");
+	    const gachaCostEl = document.getElementById("gachaCost");
+	    const gachaPullBtn = document.getElementById("gachaPull");
+	    const gachaPull10Btn = document.getElementById("gachaPull10");
+	    const gachaResultEl = document.getElementById("gachaResult");
+	    const gachaLegendaryShowcaseEl = document.getElementById("gachaLegendaryShowcase");
+	    const backFromGachaBtn = document.getElementById("backFromGacha");
     const skinViewPiecesEl = document.getElementById("skinViewPieces");
     const skinGridEl = document.getElementById("skinGrid");
     const skinPaginationEl = document.getElementById("skinPagination");
@@ -1235,10 +1239,9 @@
       return list[Math.floor(Math.random() * list.length)].id;
     }
 
-    function getGachaCost() {
-      // 10, 20, 30... (pull count starts at 0)
-      return 10 * (gachaPullCount + 1);
-    }
+	    function getGachaCost() {
+	      return 30;
+	    }
     function renderGachaShowcase() {
       if (!gachaLegendaryShowcaseEl) return;
       gachaLegendaryShowcaseEl.innerHTML = "";
@@ -1283,12 +1286,13 @@
 
 
 
-    function syncGachaUI() {
-      const cost = getGachaCost();
-      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
-      if (gachaCostEl) gachaCostEl.textContent = String(cost);
-      if (gachaPullBtn) gachaPullBtn.disabled = puzzlePieces < cost;
-    }
+	    function syncGachaUI() {
+	      const cost = getGachaCost();
+	      if (gachaPiecesEl) gachaPiecesEl.textContent = String(puzzlePieces);
+	      if (gachaCostEl) gachaCostEl.textContent = String(cost);
+	      if (gachaPullBtn) gachaPullBtn.disabled = puzzlePieces < cost;
+	      if (gachaPull10Btn) gachaPull10Btn.disabled = puzzlePieces < (cost * 10);
+	    }
 
     function openGachaView() {
       updateSkinLobbyUI();
@@ -1298,8 +1302,8 @@
       setActiveView(gachaViewEl);
     }
 
-    function pullGachaOnce() {
-      const cost = getGachaCost();
+	    function pullGachaOnce() {
+	      const cost = getGachaCost();
       if (puzzlePieces < cost) {
         if (gachaResultEl) gachaResultEl.textContent = "조각이 부족해요.";
         showDifficultyNotice("조각이 부족해요.");
@@ -1307,10 +1311,8 @@
         return;
       }
 
-      puzzlePieces -= cost;
-      gachaPullCount += 1;
-      localStorage.setItem("avoid_gacha_pulls", String(gachaPullCount));
-      localStorage.setItem("avoid_pieces", String(puzzlePieces));
+	      puzzlePieces -= cost;
+	      localStorage.setItem("avoid_pieces", String(puzzlePieces));
 
       const id = pickGachaId();
       const skin = getSkinById(id);
@@ -1345,9 +1347,74 @@
         showDifficultyNotice(`중복! (${getRarityName(skin)}) 조각 +${refund}`);
       }
 
-      syncGachaUI();
-      if (skinViewEl.classList.contains("active")) renderSkinGrid();
-    }
+	      syncGachaUI();
+	      if (skinViewEl.classList.contains("active")) renderSkinGrid();
+	    }
+
+	    function pullGachaTen() {
+	      const cost = getGachaCost();
+	      const totalCost = cost * 10;
+	      if (puzzlePieces < totalCost) {
+	        if (gachaResultEl) gachaResultEl.textContent = "조각이 부족해요.";
+	        showDifficultyNotice("조각이 부족해요.");
+	        syncGachaUI();
+	        return;
+	      }
+
+	      // Disable while pulling to avoid double-click races.
+	      if (gachaPullBtn) gachaPullBtn.disabled = true;
+	      if (gachaPull10Btn) gachaPull10Btn.disabled = true;
+
+	      const got = [];
+	      let refunds = 0;
+	      let unlockedCount = 0;
+	      let legendaryCount = 0;
+
+	      // Pay upfront for stable accounting; refunds are added back.
+	      puzzlePieces -= totalCost;
+	      localStorage.setItem("avoid_pieces", String(puzzlePieces));
+
+	      for (let i = 0; i < 10; i++) {
+	        const id = pickGachaId();
+	        const skin = getSkinById(id);
+
+	        if (!unlockedSkins.includes(id)) {
+	          unlockedSkins.push(id);
+	          unlockedCount += 1;
+	          got.push(`획득! (${getRarityName(skin)}) ${skin.name}`);
+	          if (skin.rarity === "L") legendaryCount += 1;
+	        } else {
+	          const refund = getDuplicateRefund(skin);
+	          refunds += refund;
+	          got.push(`중복! (${getRarityName(skin)}) +${refund}`);
+	        }
+	      }
+
+	      if (refunds) {
+	        puzzlePieces += refunds;
+	        localStorage.setItem("avoid_pieces", String(puzzlePieces));
+	      }
+
+	      // Persist unlocks and refresh UIs once.
+	      localStorage.setItem("avoid_unlocked_skins", JSON.stringify(unlockedSkins));
+	      updateSkinLobbyUI();
+	      renderSkinGrid();
+
+	      if (gachaResultEl) {
+	        const head = `10회 결과: 신규 ${unlockedCount}개, 환급 +${refunds}`;
+	        const tail = legendaryCount ? ` | 레전더리 ${legendaryCount}개!` : "";
+	        gachaResultEl.textContent = head + tail;
+	        gachaResultEl.classList.remove("legendary-pop");
+	        if (legendaryCount) {
+	          void gachaResultEl.offsetWidth;
+	          gachaResultEl.classList.add("legendary-pop");
+	        }
+	      }
+
+	      showDifficultyNotice(`10회 뽑기 완료 (신규 ${unlockedCount} / 환급 +${refunds})`);
+	      syncGachaUI();
+	      if (skinViewEl.classList.contains("active")) renderSkinGrid();
+	    }
 
 
     function openSkinView() {
@@ -1791,9 +1858,10 @@
     if (backFromSkinBtn) backFromSkinBtn.addEventListener("click", showLobbyView);
     if (startBtn) startBtn.addEventListener("click", startGame);
     if (openSkinBtn) openSkinBtn.addEventListener("click", openSkinView);
-    if (openGachaBtn) openGachaBtn.addEventListener("click", openGachaView);
-    if (backFromGachaBtn) backFromGachaBtn.addEventListener("click", showLobbyView);
-    if (gachaPullBtn) gachaPullBtn.addEventListener("click", pullGachaOnce);
+	    if (openGachaBtn) openGachaBtn.addEventListener("click", openGachaView);
+	    if (backFromGachaBtn) backFromGachaBtn.addEventListener("click", showLobbyView);
+	    if (gachaPullBtn) gachaPullBtn.addEventListener("click", pullGachaOnce);
+	    if (gachaPull10Btn) gachaPull10Btn.addEventListener("click", pullGachaTen);
 
 
     if (tabHomeBtn) tabHomeBtn.addEventListener("click", showLobbyView);
