@@ -184,6 +184,61 @@
       box-shadow: inset 0 0 0 1px #244f65;
     }
 
+
+    .skin-card.legendary {
+      position: relative;
+      border: 2px solid transparent;
+      background:
+        linear-gradient(#ffffff, #ffffff) padding-box,
+        linear-gradient(90deg, #f6d365, #ffd700, #fff2b3, #f6d365) border-box;
+      background-size: auto, 260% 100%;
+      animation: legendaryShimmer 2.4s linear infinite;
+    }
+
+    .skin-card.legendary::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(246,211,101,0.2), rgba(255,215,0,0.22), rgba(255,242,179,0.18), rgba(246,211,101,0.2));
+      filter: blur(10px);
+      opacity: 0.9;
+      z-index: -1;
+    }
+
+    @keyframes legendaryShimmer {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 0 0, 260% 0; }
+    }
+
+    .rarity-tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid #00000022;
+      vertical-align: middle;
+    }
+
+    .rarity-tag.rarity-L {
+      color: #2b1b00;
+      background: linear-gradient(90deg, #f6d365, #ffd700, #fff2b3);
+    }
+
+    .legendary-pop {
+      color: #2b1b00;
+      text-shadow: 0 0 14px rgba(255, 215, 0, 0.55);
+      animation: legendaryPop 900ms ease;
+    }
+
+    @keyframes legendaryPop {
+      0% { transform: translateY(2px) scale(0.98); filter: blur(0.3px); }
+      35% { transform: translateY(0) scale(1.03); filter: blur(0); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
     .skin-chip {
       display: inline-block;
       width: 16px;
@@ -443,13 +498,14 @@
       for (const skin of pageSkins) {
         const unlocked = unlockedSkins.includes(skin.id);
         const card = document.createElement("article");
-        card.className = "skin-card" + (selectedSkinId === skin.id ? " selected" : "");
+        const isLegendary = unlocked && skin.rarity === "L";
+        card.className = "skin-card" + (selectedSkinId === skin.id ? " selected" : "") + (isLegendary ? " legendary" : "");
 
         const displayName = unlocked ? skin.name : "???";
         const displayLine = unlocked ? skin.unlockLine : "???";
         const chipColor = unlocked ? skin.body : "#c4c9cd";
         card.innerHTML = `
-          <div><span class="skin-chip" style="background:${chipColor};"></span><strong>${displayName}</strong></div>
+          <div><span class="skin-chip" style="background:${chipColor};"></span><strong>${displayName}</strong>${isLegendary ? `<span class="rarity-tag rarity-L">레전더리</span>` : ""}</div>
           <div>${displayLine}</div>
           <button class="mini-btn"${unlocked ? "" : " disabled"}>${selectedSkinId === skin.id ? "선택됨" : (unlocked ? "선택" : "잠김")}</button>
         `;
@@ -528,14 +584,28 @@
         ensureSkinState();
         updateSkinLobbyUI();
         renderSkinGrid();
-        if (gachaResultEl) gachaResultEl.textContent = `획득! (${getRarityName(skin)}) ${skin.name}`;
+        if (gachaResultEl) {
+          gachaResultEl.textContent = `획득! (${getRarityName(skin)}) ${skin.name}`;
+          gachaResultEl.classList.remove("legendary-pop");
+          if (skin.rarity === "L") {
+            void gachaResultEl.offsetWidth;
+            gachaResultEl.classList.add("legendary-pop");
+          }
+        }
         showDifficultyNotice(skin.unlockLine);
       } else {
         const refund = getDuplicateRefund(skin);
         puzzlePieces += refund;
         localStorage.setItem("avoid_pieces", String(puzzlePieces));
         updateSkinLobbyUI();
-        if (gachaResultEl) gachaResultEl.textContent = `중복! (${getRarityName(skin)}) 조각 +${refund}`;
+        if (gachaResultEl) {
+          gachaResultEl.textContent = `중복! (${getRarityName(skin)}) 조각 +${refund}`;
+          gachaResultEl.classList.remove("legendary-pop");
+          if (skin.rarity === "L") {
+            void gachaResultEl.offsetWidth;
+            gachaResultEl.classList.add("legendary-pop");
+          }
+        }
         showDifficultyNotice(`중복! (${getRarityName(skin)}) 조각 +${refund}`);
       }
 
@@ -805,6 +875,35 @@
 
     function drawPlayer() {
       const skin = getSkinById(selectedSkinId);
+
+      if (skin.rarity === "L") {
+        const cx = player.x + player.w / 2;
+        const cy = player.y + player.h / 2;
+        const pulse = 0.5 + 0.5 * Math.sin(frame * 0.12);
+
+        // legendary aura
+        ctx.save();
+        ctx.globalAlpha = 0.22 + 0.14 * pulse;
+        ctx.shadowColor = "rgba(255, 215, 0, 0.95)";
+        ctx.shadowBlur = 18 + 10 * pulse;
+        ctx.fillStyle = "rgba(246, 211, 101, 0.55)";
+        ctx.fillRect(player.x - 3, player.y - 3, player.w + 6, player.h + 6);
+        ctx.restore();
+
+        // sparkles
+        ctx.save();
+        for (let i = 0; i < 8; i++) {
+          const a = frame * 0.08 + i * (Math.PI * 2 / 8);
+          const r = 26 + 6 * Math.sin(frame * 0.10 + i);
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          ctx.globalAlpha = 0.35 + 0.25 * pulse;
+          ctx.fillStyle = i % 2 === 0 ? "#fff6c7" : "#ffe08a";
+          ctx.fillRect(x, y, 2, 2);
+        }
+        ctx.restore();
+      }
+
       ctx.fillStyle = skin.body;
       ctx.fillRect(player.x, player.y, player.w, player.h);
       ctx.fillStyle = skin.eye;
