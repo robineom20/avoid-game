@@ -1249,20 +1249,18 @@
       const s = legendaries[0];
       const card = document.createElement('div');
       card.className = 'legendary-card';
-      card.style.setProperty('--skin-body', s.body);
-      card.style.setProperty('--skin-eye', s.eye);
-      card.innerHTML = `
-        <div class="legendary-figure">
-          <div class="legendary-avatar"></div>
-        </div>
-        <div class="legendary-copy">
-          <span class="tag">LEGENDARY</span>
-          <h3>${s.name}</h3>
-          <p>${s.unlockLine}</p>
-        </div>
-      `;
-      gachaLegendaryShowcaseEl.appendChild(card);
-    }
+	      card.style.setProperty('--skin-body', s.body);
+	      card.style.setProperty('--skin-eye', s.eye);
+	      card.innerHTML = `
+	        <div class="legendary-figure">
+	          <div class="legendary-avatar"></div>
+	        </div>
+	        <div class="legendary-copy">
+	          <span class="tag">LEGENDARY</span>
+	        </div>
+	      `;
+	      gachaLegendaryShowcaseEl.appendChild(card);
+	    }
 
     function updateOddsSettingsUI() {
       const entries = Object.entries(RARITIES);
