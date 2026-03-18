@@ -42,3 +42,13 @@ git push -u origin main
 - Desktop(Chrome/Edge): 주소창 설치 아이콘
 
 설치 후 오프라인(비행기 모드)에서 실행해도 열리면 성공입니다.
+
+## 빠른 배포
+
+로컬에서 `avoid_game.html` 등을 수정한 뒤, 아래로 Pages 배포용 `docs/`를 자동 갱신할 수 있습니다.
+
+```sh
+./deploy.sh
+# 또는 동기화 + 커밋 + 푸시까지 한번에
+./deploy.sh --push "update"
+```
