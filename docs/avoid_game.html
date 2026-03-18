@@ -126,17 +126,16 @@
       justify-content: center;
       margin-bottom: 16px;
     }
-
     .mascot {
       width: 108px;
       height: 108px;
       border-radius: 28px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--stroke);
+      background: transparent;
+      border: 0;
       display: grid;
       place-items: center;
       position: relative;
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      box-shadow: none;
       --skin-body: #A8E6CF;
       --skin-eye: #142025;
     }
@@ -166,22 +165,6 @@
 
     .mascot-avatar::before { left: 18px; }
     .mascot-avatar::after { right: 18px; }
-
-    .mascot.legendary {
-      border-color: rgba(255, 215, 0, 0.32);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.40), 0 0 0 1px rgba(255, 215, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.10);
-    }
-
-    .mascot.legendary::after {
-      content: "";
-      position: absolute;
-      inset: -10px;
-      border-radius: 34px;
-      background: radial-gradient(closest-side, rgba(255, 215, 0, 0.18), transparent 70%);
-      filter: blur(12px);
-      opacity: 0.9;
-      z-index: -1;
-    }
 
     .brand {
       display: inline-flex;
@@ -530,18 +513,17 @@
     }
     .tabbar {
       z-index: 9999;
-      isolation: isolate;
       pointer-events: auto;
       position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 12px;
+      right: 12px;
       bottom: calc(12px + env(safe-area-inset-bottom));
-      width: min(92vw, 420px);
-      padding: 12px;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 12px 18px;
       border-radius: 26px;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(15, 18, 32, 0.86);
       border: 1px solid var(--stroke);
-      backdrop-filter: blur(16px);
       box-shadow: 0 24px 70px rgba(0,0,0,0.55);
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -585,7 +567,7 @@
     .tabbar button.active svg { opacity: 1; }
 
     .app.in-game { padding-bottom: 18px; }
-    .app.in-game .tabbar { display: none; }
+    .in-game .tabbar { display: none; }
 
     @media (max-height: 700px) {
       .brand-name { font-size: 34px; }
@@ -703,6 +685,8 @@
         <button class="btn" id="backLobby">Back</button>
       </div>
     </section>
+  </main>
+
 
     <nav class="tabbar" aria-label="Navigation">
       <div class="tab-indicator" aria-hidden="true"></div>
@@ -723,7 +707,7 @@
         Settings
       </button>
     </nav>
-  </main>
+
 
   <script>
     const canvas = document.getElementById("game");
@@ -983,6 +967,7 @@
       if (viewEl && viewEl.classList) viewEl.classList.add("active");
 
       if (appEl) appEl.classList.toggle("in-game", viewEl === gameViewEl);
+      document.documentElement.classList.toggle("in-game", viewEl === gameViewEl);
       if (viewEl !== gameViewEl) setAppHeightStable();
       setActiveTab(viewEl && viewEl.id ? viewEl.id : "");
       requestAnimationFrame(updateTabIndicator);
