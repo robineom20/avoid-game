@@ -1114,19 +1114,6 @@
       if (!unlockedSkins.includes(id)) {
         unlockedSkins.push(id);
         localStorage.setItem("avoid_unlocked_skins", JSON.stringify(unlockedSkins));
-    
-    if (tabHomeBtn) tabHomeBtn.addEventListener("click", showLobbyView);
-    if (tabGachaBtn) tabGachaBtn.addEventListener("click", openGachaView);
-    if (tabCollectionBtn) tabCollectionBtn.addEventListener("click", openSkinView);
-    if (tabSettingsBtn) tabSettingsBtn.addEventListener("click", openSettingsView);
-    if (resetProgressBtn) resetProgressBtn.addEventListener("click", resetProgress);
-
-    if (themeSystemBtn) themeSystemBtn.addEventListener('click', () => saveThemeMode('system'));
-    if (themeDarkBtn) themeDarkBtn.addEventListener('click', () => saveThemeMode('dark'));
-    if (themeLightBtn) themeLightBtn.addEventListener('click', () => saveThemeMode('light'));
-
-    loadThemeMode();
-    ensureSkinState();
         updateSkinLobbyUI();
         renderSkinGrid();
         if (gachaResultEl) {
@@ -1605,6 +1592,19 @@
     if (backFromGachaBtn) backFromGachaBtn.addEventListener("click", showLobbyView);
     if (gachaPullBtn) gachaPullBtn.addEventListener("click", pullGachaOnce);
 
+
+    if (tabHomeBtn) tabHomeBtn.addEventListener("click", showLobbyView);
+    if (tabGachaBtn) tabGachaBtn.addEventListener("click", openGachaView);
+    if (tabCollectionBtn) tabCollectionBtn.addEventListener("click", openSkinView);
+    if (tabSettingsBtn) tabSettingsBtn.addEventListener("click", openSettingsView);
+    if (resetProgressBtn) resetProgressBtn.addEventListener("click", resetProgress);
+
+    if (themeSystemBtn) themeSystemBtn.addEventListener('click', () => saveThemeMode('system'));
+    if (themeDarkBtn) themeDarkBtn.addEventListener('click', () => saveThemeMode('dark'));
+    if (themeLightBtn) themeLightBtn.addEventListener('click', () => saveThemeMode('light'));
+
+    loadThemeMode();
+    requestAnimationFrame(updateTabIndicator);
     ensureSkinState();
     updateSkinLobbyUI();
     renderSkinGrid();
