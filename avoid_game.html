@@ -3,18 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#1d2a30" />
+  <meta name="theme-color" content="#0f1220" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <title>피하기 게임</title>
   <style>
+
     :root {
-      --bg-1: #f8efe2;
-      --bg-2: #d8e6e0;
-      --panel: #1d2a30;
-      --accent: #ef6f6c;
-      --text: #142025;
-      --light: #ffffff;
+      --bg0: #070912;
+      --bg1: #0f1220;
+      --bg2: #141a2b;
+      --surface: rgba(255, 255, 255, 0.06);
+      --surface2: rgba(255, 255, 255, 0.09);
+      --stroke: rgba(255, 255, 255, 0.12);
+      --stroke2: rgba(255, 255, 255, 0.18);
+      --text: #e9ecff;
+      --muted: rgba(233, 236, 255, 0.72);
+      --muted2: rgba(233, 236, 255, 0.48);
+      --primary: #5b78ff;
+      --primary2: #4aa2ff;
+      --danger: #ff5160;
+      --gold0: #ffd36b;
+      --gold1: #ffefb3;
     }
 
     * { box-sizing: border-box; }
@@ -22,67 +32,214 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-family: ui-rounded, system-ui, -apple-system, "SF Pro Rounded", "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
-      background: radial-gradient(circle at 20% 10%, var(--bg-1), var(--bg-2));
+      background:
+        radial-gradient(900px 900px at 20% 18%, rgba(91, 120, 255, 0.18), transparent 56%),
+        radial-gradient(860px 860px at 86% 80%, rgba(74, 162, 255, 0.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 34%, #0a0e18);
       display: grid;
       place-items: center;
       padding: 16px;
     }
 
-    .wrap {
-      width: min(92vw, 520px);
-      background: rgba(255, 255, 255, 0.75);
-      border: 2px solid #24404a22;
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: 0 14px 32px rgba(22, 33, 38, 0.18);
-      backdrop-filter: blur(4px);
+    .app {
+      width: min(92vw, 420px);
+      height: min(92vh, 860px);
+      background:
+        radial-gradient(900px 900px at 50% -10%, rgba(255, 255, 255, 0.06), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 28px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      position: relative;
+      padding: 18px 18px calc(18px + 84px + env(safe-area-inset-bottom));
+      backdrop-filter: blur(10px);
     }
 
-    .view { display: none; }
-    .view.active { display: block; }
+    .view { display: none; height: 100%; }
+    .view.active { display: flex; flex-direction: column; gap: 14px; }
 
-    .top {
+    .hud {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
+      min-height: 46px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
-      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--stroke);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
-    .badge {
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: #ffffff;
-      border: 1px solid #1d2a3020;
+    .pill strong { font-weight: 900; letter-spacing: 0.2px; }
+
+    .pill svg { width: 18px; height: 18px; opacity: 0.9; }
+
+    .center {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 6px 8px;
     }
 
-    canvas {
-      display: block;
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
+    .brand-mark {
+      width: 22px;
+      height: 22px;
+      transform: rotate(45deg);
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 10px 26px rgba(91, 120, 255, 0.20);
+    }
+
+        .brand-name {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 54px;
+      font-weight: 950;
+      letter-spacing: -0.9px;
+      line-height: 1.0;
+    }
+
+    .brand-a {
+      width: 34px;
+      height: 30px;
+      margin-right: 2px;
+      display: inline-block;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      background: linear-gradient(180deg, rgba(233,236,255,0.95), rgba(233,236,255,0.72));
+      filter: drop-shadow(0 14px 36px rgba(91, 120, 255, 0.25));
+      transform: translateY(2px);
+    }
+
+    .brand-rest {
+      color: rgba(233, 236, 255, 0.96);
+    }
+
+    .brand-sub {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: -0.2px;
+      margin-top: 2px;
+    }
+
+    .subline {
+      margin-top: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: -0.1px;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted2);
+      font-weight: 750;
+      max-width: 320px;
+      line-height: 1.3;
+    }
+
+        .cta {
       width: 100%;
-      height: auto;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #18242d 0%, #2f4757 100%);
-      border: 2px solid #ffffff70;
+      border: 0;
+      border-radius: 999px;
+      padding: 18px 18px;
+      font-size: 22px;
+      font-weight: 950;
+      letter-spacing: 0.1px;
+      color: rgba(255,255,255,0.96);
+      background: linear-gradient(90deg, #4f6bff, #5b86ff);
+      box-shadow: 0 22px 60px rgba(91, 120, 255, 0.32);
+      cursor: pointer;
+    }
+
+    .cta:active { transform: translateY(1px); }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -0.2px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .btn {
+      width: 100%;
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 12px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .btn.alt {
+      background: rgba(91, 120, 255, 0.14);
+      border-color: rgba(91, 120, 255, 0.22);
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .mini-btn {
+      margin-top: 10px;
+      width: 100%;
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 10px 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .mini-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .notice {
-      margin-bottom: 10px;
       text-align: center;
-      font-weight: 800;
-      color: #1d2a30;
-      background: #ffd166;
-      border: 1px solid #00000020;
-      border-radius: 10px;
-      padding: 8px 10px;
+      font-weight: 950;
+      color: rgba(15, 18, 32, 0.96);
+      background: linear-gradient(90deg, rgba(255, 211, 107, 0.95), rgba(255, 239, 179, 0.92));
+      border: 1px solid rgba(0, 0, 0, 0.20);
+      border-radius: 999px;
+      padding: 10px 14px;
       opacity: 0;
-      transform: translateY(-4px);
+      transform: translateY(-6px);
       transition: opacity 180ms ease, transform 180ms ease;
       pointer-events: none;
-      min-height: 38px;
+      min-height: 40px;
     }
 
     .notice.show {
@@ -90,107 +247,95 @@
       transform: translateY(0);
     }
 
-    .start-panel {
-      margin-bottom: 0;
-      background: #ffffff;
-      border: 1px solid #1d2a3020;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
+    .game-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .start-title {
-      margin: 0 0 8px;
-      font-size: 22px;
+    .hud-chip {
+      display: inline-flex;
+      gap: 6px;
+      align-items: baseline;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--stroke);
       font-weight: 900;
-      color: #1d2a30;
+      color: rgba(233, 236, 255, 0.92);
     }
 
-    .start-best {
-      margin: 0 0 10px;
-      font-weight: 700;
-    }
+    .hud-chip span { color: rgba(233, 236, 255, 0.78); font-weight: 850; }
 
-    .skin-panel {
-      margin-top: 10px;
-      background: #f8fafb;
-      border: 1px solid #1d2a301c;
-      border-radius: 10px;
-      padding: 10px;
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .btn.alt {
-      background: #38586a;
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #0d1220 0%, #121b30 100%);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
     }
 
     .skin-view-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
       gap: 10px;
-    }
-
-    .skin-title {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 900;
+      margin-bottom: 10px;
     }
 
     .skin-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .skin-pagination {
       display: flex;
       justify-content: center;
-      gap: 6px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 12px;
     }
 
     .page-btn {
-      min-width: 34px;
-      border: 1px solid #1d2a3040;
-      border-radius: 8px;
-      background: #fff;
-      color: #1d2a30;
-      padding: 6px 9px;
-      font-weight: 800;
+      min-width: 38px;
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(233, 236, 255, 0.92);
+      padding: 8px 10px;
+      font-weight: 900;
       cursor: pointer;
     }
 
     .page-btn.active {
-      background: #1d2a30;
-      color: #fff;
-      border-color: #1d2a30;
+      background: rgba(91, 120, 255, 0.20);
+      border-color: rgba(91, 120, 255, 0.32);
     }
 
     .skin-card {
-      border: 1px solid #1d2a3025;
-      border-radius: 10px;
-      background: #ffffff;
-      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
       text-align: left;
     }
 
     .skin-card.selected {
-      border-color: #244f65;
-      box-shadow: inset 0 0 0 1px #244f65;
+      border-color: rgba(91, 120, 255, 0.50);
+      box-shadow: inset 0 0 0 1px rgba(91, 120, 255, 0.35);
     }
-
 
     .skin-card.legendary {
       position: relative;
       border: 2px solid transparent;
       background:
-        linear-gradient(#ffffff, #ffffff) padding-box,
-        linear-gradient(90deg, #f6d365, #ffd700, #fff2b3, #f6d365) border-box;
+        linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) padding-box,
+        linear-gradient(90deg, var(--gold0), #ffd700, var(--gold1), var(--gold0)) border-box;
       background-size: auto, 260% 100%;
       animation: legendaryShimmer 2.4s linear infinite;
     }
@@ -198,10 +343,10 @@
     .skin-card.legendary::after {
       content: "";
       position: absolute;
-      inset: -6px;
-      border-radius: 14px;
-      background: linear-gradient(90deg, rgba(246,211,101,0.2), rgba(255,215,0,0.22), rgba(255,242,179,0.18), rgba(246,211,101,0.2));
-      filter: blur(10px);
+      inset: -8px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, rgba(255, 211, 107, 0.14), rgba(255, 215, 0, 0.16), rgba(255, 239, 179, 0.12), rgba(255, 211, 107, 0.14));
+      filter: blur(14px);
       opacity: 0.9;
       z-index: -1;
     }
@@ -214,22 +359,22 @@
     .rarity-tag {
       display: inline-block;
       margin-left: 8px;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 900;
-      border: 1px solid #00000022;
+      font-weight: 950;
+      border: 1px solid rgba(0, 0, 0, 0.22);
       vertical-align: middle;
     }
 
     .rarity-tag.rarity-L {
       color: #2b1b00;
-      background: linear-gradient(90deg, #f6d365, #ffd700, #fff2b3);
+      background: linear-gradient(90deg, var(--gold0), #ffd700, var(--gold1));
     }
 
     .legendary-pop {
-      color: #2b1b00;
-      text-shadow: 0 0 14px rgba(255, 215, 0, 0.55);
+      color: rgba(255, 239, 179, 0.98);
+      text-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
       animation: legendaryPop 900ms ease;
     }
 
@@ -243,104 +388,182 @@
       display: inline-block;
       width: 16px;
       height: 16px;
-      border-radius: 4px;
-      border: 1px solid #00000022;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 0, 0, 0.22);
       vertical-align: middle;
       margin-right: 6px;
     }
 
-    .mini-btn {
-      margin-top: 8px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      padding: 7px 8px;
-      background: #2f4b59;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
+        .tabbar {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      padding: 12px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tabbar button {
+      border: 0;
+      background: transparent;
+      color: rgba(233, 236, 255, 0.70);
+      font-weight: 900;
+      padding: 10px 8px;
+      border-radius: 16px;
       cursor: pointer;
+      display: grid;
+      place-items: center;
+      gap: 6px;
     }
 
-    .mini-btn:disabled {
-      background: #7f8b91;
-      cursor: not-allowed;
+    .tabbar svg { width: 22px; height: 22px; opacity: 0.85; }
+
+    .tabbar button.active {
+      background: rgba(255, 255, 255, 0.10);
+      color: rgba(233, 236, 255, 0.96);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
     }
 
-    .btn {
-      margin-top: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: var(--panel);
-      color: var(--light);
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
+    .tabbar button.active svg { opacity: 1; }
+
+    .tabbar button { position: relative; }
+
+    .tabbar button.active::before {
+      content: "";
+      position: absolute;
+      inset: 6px 8px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.10);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      z-index: -1;
     }
 
-    .btn:hover { filter: brightness(1.08); }
+    .app.in-game { padding-bottom: 18px; }
+    .app.in-game .tabbar { display: none; }
+
+    @media (max-height: 700px) {
+      .brand-name { font-size: 34px; }
+      .brand-sub { font-size: 18px; }
+      .app { padding-top: 14px; padding-bottom: calc(14px + 76px + env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
+    <main class="app">
     <section id="lobbyView" class="view active">
-      <section class="start-panel">
-        <h2 class="start-title">피하기 게임</h2>
-        <p class="start-best">내 최고 기록: <span id="lobbyBest">0</span></p>
-        <button class="btn" id="startBtn">게임 시작</button>
-        <section class="skin-panel">
-          <div>퍼즐 조각: <strong><span id="lobbyPieces">0</span></strong></div>
-          <div>현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
-          <div id="nextSkinHint">다음 스킨 해금까지 0개</div>
-          <button class="btn alt" id="openSkinBtn">스킨 보관함</button>
-          <button class="btn alt" id="openGachaBtn">스킨 뽑기</button>
-        </section>
-      </section>
+      <div class="hud">
+        <div class="pill" title="퍼즐 조각">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c2.6 3 3.4 5.2 3.4 7 0 1.1-.3 2.1-.9 2.9 1.5.2 2.7 1.6 2.7 3.2A5.2 5.2 0 0 1 12 22a5.2 5.2 0 0 1-5.2-5.9c.2-2.5 2.1-4.2 3.8-5.5C11.1 9.2 12 6.8 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.9"/></svg>
+          <strong><span id="lobbyPieces">0</span></strong>
+        </div>
+      </div>
+
+      <div class="center">
+        <div>
+          <div class="brand">
+            <span class="brand-name"><span class="brand-a" aria-hidden="true"></span><span class="brand-rest">rrows</span></span>
+          </div>
+          <div class="brand-sub">Level <span id="lobbyLevel">1</span></div>
+          <div class="subline">Best <span id="lobbyBest">0</span></div>
+          <div class="hint">현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
+          <div class="hint" id="nextSkinHint">다음 스킨 해금까지 0개</div>
+        </div>
+      </div>
+
+      <button class="cta" id="startBtn">Play</button>
     </section>
 
     <section id="skinView" class="view">
-      <section class="start-panel">
+      <div class="hud">
+        <div class="pill" title="퍼즐 조각">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c2.6 3 3.4 5.2 3.4 7 0 1.1-.3 2.1-.9 2.9 1.5.2 2.7 1.6 2.7 3.2A5.2 5.2 0 0 1 12 22a5.2 5.2 0 0 1-5.2-5.9c.2-2.5 2.1-4.2 3.8-5.5C11.1 9.2 12 6.8 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.9"/></svg>
+          <strong><span id="skinViewPieces">0</span></strong>
+        </div>
+      </div>
+
+      <div class="panel">
         <div class="skin-view-head">
-          <h2 class="skin-title">스킨 보관함</h2>
-          <div>조각: <strong><span id="skinViewPieces">0</span></strong></div>
+          <h2 class="panel-title">Collection</h2>
+          <div class="muted">잠긴 스킨은 ???로 표시</div>
         </div>
         <div id="skinGrid" class="skin-grid"></div>
         <div id="skinPagination" class="skin-pagination"></div>
-        <button class="btn" id="backFromSkin">로비로 돌아가기</button>
-      </section>
+      </div>
     </section>
 
     <section id="gachaView" class="view">
-      <section class="start-panel">
-        <div class="skin-view-head">
-          <h2 class="skin-title">스킨 뽑기</h2>
-          <div>조각: <strong><span id="gachaPieces">0</span></strong></div>
+      <div class="hud">
+        <div class="pill" title="퍼즐 조각">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c2.6 3 3.4 5.2 3.4 7 0 1.1-.3 2.1-.9 2.9 1.5.2 2.7 1.6 2.7 3.2A5.2 5.2 0 0 1 12 22a5.2 5.2 0 0 1-5.2-5.9c.2-2.5 2.1-4.2 3.8-5.5C11.1 9.2 12 6.8 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.9"/></svg>
+          <strong><span id="gachaPieces">0</span></strong>
         </div>
-        <section class="skin-panel">
-          <div>이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
-          <div style="opacity:0.85;">뽑기 전용 스킨은 일정 확률로만 나옵니다.</div>
-          <div id="gachaOdds" style="opacity:0.85;">등급 확률: 레어 80% / 에픽 18% / 레전더리 2%</div>
-          <button class="btn alt" id="gachaPull">1회 뽑기</button>
-          <div id="gachaResult" style="margin-top:10px;font-weight:800;"></div>
-        </section>
-        <button class="btn" id="backFromGacha">로비로 돌아가기</button>
-      </section>
+      </div>
+
+      <div class="panel">
+        <div class="skin-view-head">
+          <h2 class="panel-title">Gacha</h2>
+          <div class="muted">등급 확률: 레어 80% / 에픽 18% / 레전더리 2%</div>
+        </div>
+
+        <div class="muted" style="margin-top: 6px;">이번 뽑기 비용: <strong><span id="gachaCost">10</span></strong> 조각</div>
+        <button class="btn alt" id="gachaPull" style="margin-top: 12px;">1회 뽑기</button>
+        <div id="gachaResult" style="margin-top:12px;font-weight:950;"></div>
+      </div>
+    </section>
+
+    <section id="settingsView" class="view">
+      <div class="hud">
+        <div class="pill" title="앱 정보">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 10.8v5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 7.2h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <strong>Settings</strong>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">데이터</h2>
+        <div class="muted" style="margin-top:8px; line-height: 1.35;">최고기록, 조각, 스킨 해금, 뽑기 횟수는 이 기기에 저장됩니다.</div>
+        <button class="btn" id="resetProgressBtn" style="margin-top: 12px; border-color: rgba(255,81,96,0.35);">진행 초기화</button>
+      </div>
     </section>
 
     <section id="gameView" class="view">
-      <section class="top">
-        <div class="badge">점수: <span id="score">0</span></div>
-        <div class="badge">최고점: <span id="best">0</span></div>
-        <div class="badge">난이도: <span id="difficulty">1</span></div>
-        <div class="badge">조각: <span id="pieces">0</span></div>
-      </section>
+      <div class="game-hud">
+        <div class="hud-chip"><span>Score</span><strong><span id="score">0</span></strong></div>
+        <div class="hud-chip"><span>Best</span><strong><span id="best">0</span></strong></div>
+        <div class="hud-chip"><span>Lv</span><strong><span id="difficulty">1</span></strong></div>
+        <div class="hud-chip"><span>Pieces</span><strong><span id="pieces">0</span></strong></div>
+      </div>
       <div class="notice" id="notice"></div>
       <canvas id="game" width="480" height="640"></canvas>
-      <button class="btn" id="restart">다시 시작 (R)</button>
-      <button class="btn" id="backLobby">로비로 돌아가기</button>
+      <button class="btn alt" id="restart">Restart (R)</button>
+      <button class="btn" id="backLobby">Back</button>
     </section>
+
+    <nav class="tabbar" aria-label="Navigation">
+      <button id="tabHome" class="active" aria-current="page" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.8 12 4l8 6.8v8.4a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 19.2v-8.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.2 21v-7.2h5.6V21" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Home
+      </button>
+      <button id="tabGacha" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 8.5 12 3l5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 11.2h10.4c.9 0 1.6.7 1.6 1.6v6.7c0 .9-.7 1.6-1.6 1.6H7c-.9 0-1.6-.7-1.6-1.6v-6.7c0-.9.7-1.6 1.6-1.6Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 11.2V4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Gacha
+      </button>
+      <button id="tabCollection" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.2 4h9.6c1 0 1.8.8 1.8 1.8v12.4c0 1-.8 1.8-1.8 1.8H7.2c-1 0-1.8-.8-1.8-1.8V5.8C5.4 4.8 6.2 4 7.2 4Z" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Collection
+      </button>
+      <button id="tabSettings" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15.4a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8Z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 12a7.4 7.4 0 0 0-.08-1.06l2-1.55-2-3.46-2.45.98a7.5 7.5 0 0 0-1.82-1.06l-.38-2.6H9.33l-.38 2.6c-.64.25-1.25.6-1.82 1.06L4.68 5.93l-2 3.46 2 1.55c-.05.35-.08.7-.08 1.06s.03.71.08 1.06l-2 1.55 2 3.46 2.45-.98c.57.46 1.18.81 1.82 1.06l.38 2.6h5.34l.38-2.6c.64-.25 1.25-.6 1.82-1.06l2.45.98 2-3.46-2-1.55c.05-.35.08-.7.08-1.06Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.95"/></svg>
+        Settings
+      </button>
+    </nav>
   </main>
 
   <script>
@@ -373,6 +596,16 @@
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restart");
     const backLobbyBtn = document.getElementById("backLobby");
+
+    const appEl = document.querySelector(".app");
+    const lobbyLevelEl = document.getElementById("lobbyLevel");
+    const settingsViewEl = document.getElementById("settingsView");
+    const resetProgressBtn = document.getElementById("resetProgressBtn");
+
+    const tabHomeBtn = document.getElementById("tabHome");
+    const tabGachaBtn = document.getElementById("tabGacha");
+    const tabCollectionBtn = document.getElementById("tabCollection");
+    const tabSettingsBtn = document.getElementById("tabSettings");
 
     const W = canvas.width;
     const H = canvas.height;
@@ -452,12 +685,54 @@
         nextSkinHintEl.textContent = `다음 스킨: ??? | 문구: ??? | 해금까지 ${remain}개`;
       }
     }
+    function setActiveTab(viewId) {
+      const tabs = [tabHomeBtn, tabGachaBtn, tabCollectionBtn, tabSettingsBtn].filter(Boolean);
+      for (const t of tabs) {
+        t.classList.remove("active");
+        t.removeAttribute("aria-current");
+      }
+
+      const map = {
+        lobbyView: tabHomeBtn,
+        gachaView: tabGachaBtn,
+        skinView: tabCollectionBtn,
+        settingsView: tabSettingsBtn
+      };
+      const active = map[viewId];
+      if (active) {
+        active.classList.add("active");
+        active.setAttribute("aria-current", "page");
+      }
+    }
+
+    function openSettingsView() {
+      updateSkinLobbyUI();
+      setActiveView(settingsViewEl);
+    }
+
+    function resetProgress() {
+      const ok = confirm("정말 초기화할까요?\n\n최고기록, 조각, 스킨, 뽑기 기록이 모두 삭제됩니다.");
+      if (!ok) return;
+      const keys = [
+        "avoid_best",
+        "avoid_pieces",
+        "avoid_unlocked_skins",
+        "avoid_selected_skin",
+        "avoid_gacha_pulls"
+      ];
+      for (const k of keys) localStorage.removeItem(k);
+      location.reload();
+    }
+
     function setActiveView(viewEl) {
-      const views = [lobbyViewEl, skinViewEl, gachaViewEl, gameViewEl];
+      const views = [lobbyViewEl, skinViewEl, gachaViewEl, settingsViewEl, gameViewEl];
       for (const v of views) {
         if (v && v.classList) v.classList.remove("active");
       }
       if (viewEl && viewEl.classList) viewEl.classList.add("active");
+
+      if (appEl) appEl.classList.toggle("in-game", viewEl === gameViewEl);
+      setActiveTab(viewEl && viewEl.id ? viewEl.id : "");
     }
 
     function selectSkin(skinId) {
@@ -592,7 +867,13 @@
       if (!unlockedSkins.includes(id)) {
         unlockedSkins.push(id);
         localStorage.setItem("avoid_unlocked_skins", JSON.stringify(unlockedSkins));
-        ensureSkinState();
+    
+    if (tabHomeBtn) tabHomeBtn.addEventListener("click", showLobbyView);
+    if (tabGachaBtn) tabGachaBtn.addEventListener("click", openGachaView);
+    if (tabCollectionBtn) tabCollectionBtn.addEventListener("click", openSkinView);
+    if (tabSettingsBtn) tabSettingsBtn.addEventListener("click", openSettingsView);
+    if (resetProgressBtn) resetProgressBtn.addEventListener("click", resetProgress);
+    ensureSkinState();
         updateSkinLobbyUI();
         renderSkinGrid();
         if (gachaResultEl) {
@@ -669,6 +950,7 @@
 
     function showLobbyView() {
       lobbyBestEl.textContent = String(bestScore);
+      if (lobbyLevelEl) lobbyLevelEl.textContent = String(Math.floor(bestScore / 20) + 1);
       updateSkinLobbyUI();
       setActiveView(lobbyViewEl);
       gameStarted = false;
