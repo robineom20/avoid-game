@@ -287,28 +287,37 @@
       opacity: 1;
       transform: translateY(0);
     }
-
     .game-hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
-      flex-wrap: wrap;
+      align-items: stretch;
     }
 
+    @media (max-width: 380px) {
+      .game-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     .hud-chip {
-      display: inline-flex;
-      gap: 6px;
+      display: flex;
       align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
       padding: 10px 12px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--stroke);
       font-weight: 900;
-      color: rgba(233, 236, 255, 0.92);
+      color: var(--text);
     }
+    .hud-chip span { color: var(--muted); font-weight: 850; }
 
-    .hud-chip span { color: rgba(233, 236, 255, 0.78); font-weight: 850; }
+    .hud-chip strong {
+      display: inline-block;
+      min-width: 3ch;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum' 1;
+    }
 
     canvas {
       display: block;
