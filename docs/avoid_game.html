@@ -335,29 +335,32 @@
       opacity: 0.45;
       cursor: not-allowed;
     }
-    .notice {
-      text-align: center;
-      font-weight: 950;
-      color: rgba(15, 18, 32, 0.96);
-      border-radius: 999px;
-      opacity: 0;
-      transform: translateY(-6px);
-      transition: opacity 180ms ease, transform 180ms ease;
-      pointer-events: none;
-      height: 0;
-      padding: 0;
-      overflow: hidden;
-    }
+	    .notice {
+	      position: absolute;
+	      left: 50%;
+	      top: 10px;
+	      width: min(calc(100% - 18px), 360px);
+	      text-align: center;
+	      font-weight: 950;
+	      color: rgba(15, 18, 32, 0.96);
+	      border-radius: 999px;
+	      opacity: 0;
+	      transform: translate(-50%, -6px);
+	      transition: opacity 180ms ease, transform 180ms ease;
+	      pointer-events: none;
+	      overflow: hidden;
+	      padding: 10px 14px;
+	      z-index: 5;
+	      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+	    }
 
-    .notice.show {
-      height: auto;
-      padding: 10px 14px;
-      opacity: 1;
-      transform: translateY(0);
-      background: linear-gradient(90deg, rgba(255, 211, 107, 0.95), rgba(255, 239, 179, 0.92));
-      border: 1px solid rgba(0, 0, 0, 0.20);
-      min-height: 40px;
-    }
+	    .notice.show {
+	      opacity: 1;
+	      transform: translate(-50%, 0);
+	      background: linear-gradient(90deg, rgba(255, 211, 107, 0.95), rgba(255, 239, 179, 0.92));
+	      border: 1px solid rgba(0, 0, 0, 0.20);
+	      min-height: 40px;
+	    }
     .game-hud {
       width: 100%;
       max-width: 372px;
@@ -417,11 +420,12 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
     }
 
-    .game-stage {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-    }
+	    .game-stage {
+	      flex: 1 1 auto;
+	      min-height: 0;
+	      display: flex;
+	      position: relative;
+	    }
 
         .game-stage canvas {
       width: 100%;
@@ -821,20 +825,22 @@
       </div>
     </section>
 
-    <section id="gameView" class="view">
-      <div class="game-hud">
-        <div class="hud-chip"><span>Score</span><strong><span id="score">0</span></strong></div>
-        <div class="hud-chip"><span>Best</span><strong><span id="best">0</span></strong></div>
-        <div class="hud-chip"><span>Lv</span><strong><span id="difficulty">1</span></strong></div>
-        <div class="hud-chip"><span>Pieces</span><strong><span id="pieces">0</span></strong></div>
-      </div>
-      <div class="notice" id="notice"></div>
-      <div class="game-stage"><canvas id="game" width="480" height="640"></canvas></div>
-      <div class="game-actions">
-        <button class="btn alt" id="restart">Restart (R)</button>
-        <button class="btn" id="backLobby">Back</button>
-      </div>
-    </section>
+	    <section id="gameView" class="view">
+	      <div class="game-hud">
+	        <div class="hud-chip"><span>Score</span><strong><span id="score">0</span></strong></div>
+	        <div class="hud-chip"><span>Best</span><strong><span id="best">0</span></strong></div>
+	        <div class="hud-chip"><span>Lv</span><strong><span id="difficulty">1</span></strong></div>
+	        <div class="hud-chip"><span>Pieces</span><strong><span id="pieces">0</span></strong></div>
+	      </div>
+	      <div class="game-stage">
+	        <div class="notice" id="notice" aria-live="polite"></div>
+	        <canvas id="game" width="480" height="640"></canvas>
+	      </div>
+	      <div class="game-actions">
+	        <button class="btn alt" id="restart">Restart (R)</button>
+	        <button class="btn" id="backLobby">Back</button>
+	      </div>
+	    </section>
   </main>
 
 
