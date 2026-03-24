@@ -732,7 +732,7 @@
     <section id="lobbyView" class="view active">
       <div class="hud">
         <div class="pill" title="퍼즐 조각">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c2.6 3 3.4 5.2 3.4 7 0 1.1-.3 2.1-.9 2.9 1.5.2 2.7 1.6 2.7 3.2A5.2 5.2 0 0 1 12 22a5.2 5.2 0 0 1-5.2-5.9c.2-2.5 2.1-4.2 3.8-5.5C11.1 9.2 12 6.8 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" opacity="0.9"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.4 4.5h2.1c.5 0 .9.4.9.9v1a1.6 1.6 0 0 0 3.2 0v-1c0-.5.4-.9.9-.9h1.1c1.6 0 2.9 1.3 2.9 2.9v1.1c0 .5-.4.9-.9.9h-1a1.6 1.6 0 0 0 0 3.2h1c.5 0 .9.4.9.9v1.1c0 1.6-1.3 2.9-2.9 2.9h-1.1c-.5 0-.9-.4-.9-.9v-1a1.6 1.6 0 0 0-3.2 0v1c0 .5-.4.9-.9.9H8.4a2.9 2.9 0 0 1-2.9-2.9v-2.1c0-.5.4-.9.9-.9h1a1.6 1.6 0 0 0 0-3.2h-1c-.5 0-.9-.4-.9-.9V7.4a2.9 2.9 0 0 1 2.9-2.9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           <strong><span id="lobbyPieces">0</span></strong>
         </div>
       </div>
@@ -752,7 +752,6 @@
 	            <span class="brand-name">AVOID</span>
 	          </div>
 	          <div class="subline">Best <span id="lobbyBest">0</span></div>
-	          <div class="hint">현재 스킨: <strong><span id="lobbySkinName">기본</span></strong></div>
 	          <div class="hint" id="nextSkinHint">다음 스킨 해금까지 0개</div>
         </div>
       </div>
@@ -1060,7 +1059,7 @@
 	        lobbyTitleMascotEl.style.setProperty("--skin-eye", currentSkin.eye);
 	        lobbyTitleMascotEl.classList.toggle("legendary", currentSkin.rarity === "L");
 	      }
-	      lobbySkinNameEl.textContent = currentSkin.name;
+	      if (lobbySkinNameEl) lobbySkinNameEl.textContent = currentSkin.name;
 	      lobbyPiecesEl.textContent = String(puzzlePieces);
 	      piecesEl.textContent = String(puzzlePieces);
 	      skinViewPiecesEl.textContent = String(puzzlePieces);
