@@ -9,7 +9,7 @@ inventory = []
 
 def pull():
     global legend_pity
-    chance = random.randint∑dwadw(1, 100)
+    chance = random.randint(1, 100)
 
     # 49번 연속 전설이 안 나오면 다음 뽑기에서 전설 확정
     if legend_pity >= 49:
