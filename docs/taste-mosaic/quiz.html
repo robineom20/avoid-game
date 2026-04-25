@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>취향 검사 | Taste Mosaic</title>
+    <meta
+      name="description"
+      content="Taste Mosaic 취향 검사에서 10개의 질문에 답하고 나만의 영화와 음악 추천을 받아보세요."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="취향 검사 | Taste Mosaic" />
+    <meta
+      property="og:description"
+      content="10개의 질문으로 나의 영화와 음악 취향을 찾아보세요."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="quiz">
+    <header class="site-header">
+      <a class="brand-mark" href="./index.html">Taste Mosaic</a>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a class="nav-link" href="./index.html">홈</a>
+        <a class="nav-link is-active" href="./quiz.html">검사</a>
+        <a class="nav-link" href="./result.html">결과</a>
+      </nav>
+    </header>
+
+    <main class="quiz-page">
+      <div class="quiz-shell">
+        <aside class="quiz-aside">
+          <p class="eyebrow">Taste test</p>
+          <h1>지금 끌리는 쪽을 고르세요.</h1>
+          <p class="hero-text">
+            오래 고민하지 않아도 괜찮습니다. 첫 반응이 보통 취향의 방향을
+            제일 잘 보여줍니다.
+          </p>
+          <button id="restart-test" class="secondary-button" type="button">처음부터</button>
+        </aside>
+
+        <section class="quiz-workspace" aria-live="polite">
+          <div class="progress-row">
+            <p id="progress-text" class="progress-text">1 / 10 질문</p>
+            <div class="progress-bar" aria-hidden="true">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+          </div>
+          <article class="question-card">
+            <p id="question-category" class="question-category">MOVIE SCENE</p>
+            <h2 id="question-title" class="question-title"></h2>
+            <div id="question-options" class="option-list"></div>
+          </article>
+        </section>
+      </div>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

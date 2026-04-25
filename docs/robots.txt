@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://robineom20.github.io/avoid-game/sitemap.xml

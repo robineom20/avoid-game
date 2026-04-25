@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>결과 | Taste Mosaic</title>
+    <meta
+      name="description"
+      content="Taste Mosaic 결과 페이지에서 취향 별명, 성향 점수, 영화 추천, 음악 추천을 확인하세요."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="결과 | Taste Mosaic" />
+    <meta
+      property="og:description"
+      content="나의 취향 결과와 추천 영화, 추천 음악을 확인해보세요."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="result">
+    <header class="site-header">
+      <a class="brand-mark" href="./index.html">Taste Mosaic</a>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a class="nav-link" href="./index.html">홈</a>
+        <a class="nav-link" href="./quiz.html">검사</a>
+        <a class="nav-link is-active" href="./result.html">결과</a>
+      </nav>
+    </header>
+
+    <main class="result-page">
+      <section id="empty-state" class="result-empty">
+        <p class="eyebrow">No result yet</p>
+        <h1>아직 결과가 없습니다.</h1>
+        <p class="hero-text">검사를 완료하면 이곳에 영화와 음악 추천이 나타납니다.</p>
+        <a class="primary-button" href="./quiz.html">검사하러 가기</a>
+      </section>
+
+      <section id="result-view" class="result-view hidden">
+        <header class="result-header">
+          <div>
+            <p class="eyebrow">Your taste report</p>
+            <h1 id="persona-name" class="persona-name"></h1>
+            <p id="persona-description" class="persona-description"></p>
+          </div>
+          <button id="copy-summary" class="secondary-button" type="button">결과 복사</button>
+        </header>
+
+        <section class="traits-section">
+          <div id="trait-chips" class="trait-chips"></div>
+          <div id="score-bars" class="score-bars"></div>
+        </section>
+
+        <section class="recommend-section">
+          <div class="section-heading">
+            <p class="eyebrow">Movies</p>
+            <h2>영화 추천</h2>
+          </div>
+          <div id="movie-list" class="card-list media-grid"></div>
+        </section>
+
+        <section class="recommend-section">
+          <div class="section-heading">
+            <p class="eyebrow">Music</p>
+            <h2>음악 추천</h2>
+          </div>
+          <div id="music-list" class="card-list media-grid"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
