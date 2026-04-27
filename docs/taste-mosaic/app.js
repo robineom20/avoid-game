@@ -1351,6 +1351,7 @@ const defaultPersona = {
 
 const STORAGE_KEY = "taste-mosaic-result";
 const COMMUNITY_STORAGE_KEY = "taste-mosaic-community-posts";
+const SITE_VERSION = "19";
 
 const state = {
   currentQuestionIndex: 0,
@@ -1391,6 +1392,17 @@ const el = {
   communityForm: document.getElementById("community-form"),
   communityList: document.getElementById("community-list"),
   communityEmpty: document.getElementById("community-empty"),
+  detailPageArtwork: document.getElementById("detail-page-artwork"),
+  detailPageType: document.getElementById("detail-page-type"),
+  detailPageTitle: document.getElementById("detail-page-title"),
+  detailPageSubtitle: document.getElementById("detail-page-subtitle"),
+  detailPageSynopsis: document.getElementById("detail-page-synopsis"),
+  detailPageReason: document.getElementById("detail-page-reason"),
+  detailPageTraits: document.getElementById("detail-page-traits"),
+  detailPageRating: document.getElementById("detail-page-rating"),
+  detailPageComments: document.getElementById("detail-page-comments"),
+  detailReviewForm: document.getElementById("detail-review-form"),
+  detailExternalLink: document.getElementById("detail-external-link"),
 };
 
 function createEmptyScores() {
@@ -1600,6 +1612,16 @@ function buildSearchUrl(item, kind) {
   const service = kind === "movie" ? "watch" : "listen";
   const query = encodeURIComponent(`${item.title} ${item.subtitle} ${service}`);
   return `https://www.google.com/search?q=${query}`;
+}
+
+function buildDetailUrl(item, kind) {
+  const params = new URLSearchParams({
+    type: kind,
+    title: item.title,
+    v: SITE_VERSION,
+  });
+
+  return `./detail.html?${params.toString()}`;
 }
 
 function getItemTraits(item) {
@@ -1919,7 +1941,7 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
     `
         : "";
     const actionLabel = "상세 보기";
-    const initialOpenUrl = cachedPreview?.openUrl || buildSearchUrl(item, kind);
+    const detailUrl = buildDetailUrl(item, kind);
 
     card.tabIndex = 0;
     card.setAttribute("role", "button");
@@ -1938,7 +1960,7 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
       <div class="recommend-actions">
         ${previewMarkup}
       </div>
-      <button class="open-link" type="button" data-open-link data-open-url="${initialOpenUrl}">${actionLabel}</button>
+      <a class="open-link" href="${detailUrl}" data-open-link>${actionLabel}</a>
     `;
 
     const albumCover = card.querySelector("[data-album-cover]");
@@ -1949,7 +1971,7 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
         return;
       }
 
-      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
+      window.location.href = detailUrl;
     });
 
     card.addEventListener("keydown", (event) => {
@@ -1958,13 +1980,11 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
       }
 
       event.preventDefault();
-      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
+      window.location.href = detailUrl;
     });
 
     openLink?.addEventListener("click", (event) => {
-      event.preventDefault();
       event.stopPropagation();
-      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
     });
 
     if (kind === "music") {
@@ -1986,9 +2006,6 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
           albumCover.classList.add("has-image");
           albumCover.innerHTML = `<img src="${previewData.artworkUrl}" alt="${item.title} ${kind === "movie" ? "포스터" : "앨범 커버"}" loading="lazy" />`;
 
-          if (previewData.openUrl && openLink) {
-            openLink.dataset.openUrl = previewData.openUrl;
-          }
         })
         .catch(() => {
           // Artwork is optional; keep the fallback if fetch fails.
@@ -2067,6 +2084,174 @@ function loadCommunityPosts() {
 
 function saveCommunityPosts(posts) {
   localStorage.setItem(COMMUNITY_STORAGE_KEY, JSON.stringify(posts));
+}
+
+function getCatalogItem(kind, title) {
+  const source = kind === "movie" ? movies : musicTracks;
+  return source.find((item) => item.title === title) || null;
+}
+
+function getCommunityPostsForItem(item, kind) {
+  return loadCommunityPosts().filter((post) => {
+    return post.type === kind && normalizeText(post.title) === normalizeText(item.title);
+  });
+}
+
+function getSeededRating(item) {
+  const seed = item.title.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return (4.1 + (seed % 8) / 10).toFixed(1);
+}
+
+function getAverageRating(item, kind) {
+  const posts = getCommunityPostsForItem(item, kind);
+  if (!posts.length) {
+    return getSeededRating(item);
+  }
+
+  const average = posts.reduce((sum, post) => sum + Number(post.rating || 0), 0) / posts.length;
+  return average.toFixed(1);
+}
+
+function getFallbackSynopsis(item, kind) {
+  const traits = getItemTraits(item).join(", ");
+
+  if (kind === "movie") {
+    return `${item.title}은/는 ${item.subtitle}의 작품으로, ${traits}의 결이 강하게 느껴지는 영화입니다. ${item.note} 줄거리와 분위기를 함께 보고 싶다면 인물의 선택, 장면의 리듬, 마지막에 남는 감정에 집중해보세요.`;
+  }
+
+  return `${item.title}은/는 ${item.subtitle}의 곡으로, ${traits} 취향과 잘 맞는 음악입니다. ${item.note} 곡의 사운드 질감, 보컬/연주, 반복해서 들었을 때 남는 분위기를 중심으로 감상해보세요.`;
+}
+
+async function fetchMovieSynopsis(item) {
+  const pageTitle = encodeURIComponent(getWikipediaMovieTitle(item));
+  const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${pageTitle}`);
+
+  if (!response.ok) {
+    throw new Error("synopsis-fetch-failed");
+  }
+
+  const payload = await response.json();
+  return payload.extract || getFallbackSynopsis(item, "movie");
+}
+
+function renderDetailComments(item, kind) {
+  if (!el.detailPageComments) {
+    return;
+  }
+
+  const posts = getCommunityPostsForItem(item, kind);
+  if (!posts.length) {
+    el.detailPageComments.innerHTML = `
+      <article class="community-card">
+        <div class="recommend-meta">
+          <span class="pill">아직 코멘트 없음</span>
+        </div>
+        <h2>첫 평가를 남겨보세요.</h2>
+        <p>이 작품을 본 사람들이 어떤 점을 좋아했는지 이곳에 쌓이게 됩니다.</p>
+      </article>
+    `;
+    return;
+  }
+
+  el.detailPageComments.innerHTML = posts
+    .map((post) => {
+      const stars = "★".repeat(Number(post.rating || 0)) + "☆".repeat(5 - Number(post.rating || 0));
+
+      return `
+        <article class="community-card fade-in">
+          <div class="recommend-meta">
+            <span class="pill">${stars}</span>
+          </div>
+          <h2>${escapeHtml(post.title)}</h2>
+          <p class="community-creator">${escapeHtml(post.creator)}</p>
+          <p>${escapeHtml(post.comment)}</p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function addDetailReview(item, kind) {
+  if (!el.detailReviewForm) {
+    return;
+  }
+
+  const formData = new FormData(el.detailReviewForm);
+  const nextPost = {
+    id: Date.now(),
+    type: kind,
+    title: item.title,
+    creator: item.subtitle,
+    rating: Number(formData.get("rating") || 5),
+    comment: String(formData.get("comment") || "").trim(),
+  };
+
+  if (!nextPost.comment) {
+    return;
+  }
+
+  saveCommunityPosts([nextPost, ...loadCommunityPosts()].slice(0, 50));
+  el.detailReviewForm.reset();
+  if (el.detailPageRating) {
+    el.detailPageRating.textContent = `${getAverageRating(item, kind)} / 5`;
+  }
+  renderDetailComments(item, kind);
+}
+
+async function initDetailPage() {
+  const params = new URLSearchParams(window.location.search);
+  const kind = params.get("type") === "music" ? "music" : "movie";
+  const title = params.get("title") || "";
+  const item = getCatalogItem(kind, title);
+
+  if (!item || !el.detailPageTitle) {
+    return;
+  }
+
+  const resultData = loadResultData();
+  const scores = resultData?.scores || createEmptyScores();
+  const typeLabel = kind === "movie" ? "Movie detail" : "Music detail";
+  const actionLabel = kind === "movie" ? "볼 수 있는 곳 찾기" : "들을 수 있는 곳 찾기";
+  const artworkFetcher = kind === "movie" ? fetchMovieArtwork : fetchTrackPreview;
+
+  el.detailPageType.textContent = typeLabel;
+  el.detailPageTitle.textContent = item.title;
+  el.detailPageSubtitle.textContent = item.subtitle;
+  el.detailPageReason.textContent = buildReason(item, scores);
+  el.detailPageTraits.innerHTML = getItemTraits(item)
+    .map((trait) => `<span class="trait-chip">${escapeHtml(trait)}</span>`)
+    .join("");
+  el.detailPageRating.textContent = `${getAverageRating(item, kind)} / 5`;
+  el.detailExternalLink.href = buildSearchUrl(item, kind);
+  el.detailExternalLink.textContent = actionLabel;
+  el.detailPageSynopsis.textContent = getFallbackSynopsis(item, kind);
+  renderDetailComments(item, kind);
+
+  el.detailReviewForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    addDetailReview(item, kind);
+  });
+
+  try {
+    const artworkData = await artworkFetcher(item);
+    if (artworkData?.openUrl) {
+      el.detailExternalLink.href = artworkData.openUrl;
+    }
+    if (artworkData?.artworkUrl && el.detailPageArtwork) {
+      el.detailPageArtwork.classList.add("has-image");
+      el.detailPageArtwork.innerHTML = `<img src="${artworkData.artworkUrl}" alt="${escapeHtml(item.title)} ${kind === "movie" ? "포스터" : "앨범 커버"}" />`;
+    }
+  } catch {
+    // Keep the fallback artwork and external search link.
+  }
+
+  if (kind === "movie") {
+    try {
+      el.detailPageSynopsis.textContent = await fetchMovieSynopsis(item);
+    } catch {
+      el.detailPageSynopsis.textContent = getFallbackSynopsis(item, kind);
+    }
+  }
 }
 
 function renderCommunityPosts() {
@@ -2181,7 +2366,7 @@ function selectOption(optionIndex) {
 
   if (state.currentQuestionIndex === questions.length - 1) {
     saveResultData(buildResultData());
-    window.location.href = "./result.html?v=18";
+    window.location.href = `./result.html?v=${SITE_VERSION}`;
     return;
   }
 
@@ -2242,6 +2427,11 @@ function initSite() {
 
   if (page === "community") {
     initCommunityPage();
+    return;
+  }
+
+  if (page === "detail") {
+    initDetailPage();
   }
 }
 

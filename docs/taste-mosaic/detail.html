@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>상세 보기 | Taste Mosaic</title>
+    <meta
+      name="description"
+      content="Taste Mosaic 추천 작품의 줄거리, 추천 이유, 평점과 코멘트를 확인하세요."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="상세 보기 | Taste Mosaic" />
+    <meta property="og:description" content="추천 작품의 줄거리와 사람들의 평가를 확인해보세요." />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="detail">
+    <header class="site-header">
+      <a class="brand-mark" href="./index.html?v=19">Taste Mosaic</a>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a class="nav-link" href="./index.html?v=19">홈</a>
+        <a class="nav-link" href="./quiz.html?v=19">검사</a>
+        <a class="nav-link" href="./result.html?v=19">결과</a>
+        <a class="nav-link" href="./community.html?v=19">커뮤니티</a>
+      </nav>
+    </header>
+
+    <main class="detail-page">
+      <section class="detail-hero">
+        <div id="detail-page-artwork" class="detail-artwork">
+          <div class="album-cover-fallback">
+            <span class="album-cover-icon">Film</span>
+            <span class="album-cover-text">Taste Mosaic</span>
+          </div>
+        </div>
+
+        <article class="detail-page-copy">
+          <p id="detail-page-type" class="eyebrow">Detail</p>
+          <h1 id="detail-page-title">추천 상세</h1>
+          <p id="detail-page-subtitle" class="detail-subtitle"></p>
+          <div id="detail-page-traits" class="trait-chips"></div>
+          <div class="detail-rating-card">
+            <span>평균 평점</span>
+            <strong id="detail-page-rating">- / 5</strong>
+          </div>
+          <a id="detail-external-link" class="primary-button" href="#" target="_blank" rel="noreferrer">
+            볼 수 있는 곳 찾기
+          </a>
+        </article>
+      </section>
+
+      <section class="detail-content-grid">
+        <article class="detail-info-card">
+          <p class="eyebrow">Synopsis</p>
+          <h2>줄거리 / 설명</h2>
+          <p id="detail-page-synopsis"></p>
+        </article>
+
+        <article class="detail-info-card">
+          <p class="eyebrow">Why matched</p>
+          <h2>왜 추천됐나요?</h2>
+          <p id="detail-page-reason"></p>
+        </article>
+      </section>
+
+      <section class="detail-community">
+        <div class="section-heading">
+          <p class="eyebrow">Ratings and comments</p>
+          <h2>사람들의 평가</h2>
+        </div>
+
+        <form id="detail-review-form" class="community-form detail-review-form">
+          <label>
+            별점
+            <select name="rating" required>
+              <option value="5">5점</option>
+              <option value="4">4점</option>
+              <option value="3">3점</option>
+              <option value="2">2점</option>
+              <option value="1">1점</option>
+            </select>
+          </label>
+          <label>
+            코멘트
+            <textarea
+              name="comment"
+              rows="4"
+              placeholder="이 작품을 본 느낌이나 추천 이유를 남겨주세요."
+              required
+            ></textarea>
+          </label>
+          <button class="primary-button" type="submit">평가 남기기</button>
+        </form>
+
+        <div id="detail-page-comments" class="community-list"></div>
+      </section>
+    </main>
+
+    <script src="./app.js?v=19"></script>
+  </body>
+</html>

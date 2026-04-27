@@ -1187,6 +1187,94 @@ body {
   padding: 54px 0 72px;
 }
 
+.detail-page {
+  width: min(1180px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 44px 0 72px;
+}
+
+.detail-hero {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: stretch;
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.detail-page-copy {
+  display: grid;
+  align-content: center;
+  gap: 16px;
+}
+
+.detail-page-copy h1 {
+  margin: 0;
+  font-size: clamp(44px, 7vw, 82px);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.detail-content-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+  padding: 28px 0;
+}
+
+.detail-info-card,
+.detail-rating-card {
+  border: 1px solid var(--site-line);
+  border-radius: 12px;
+  background: var(--site-surface);
+}
+
+.detail-info-card {
+  padding: 24px;
+}
+
+.detail-info-card h2,
+.detail-community h2 {
+  margin: 0 0 12px;
+  letter-spacing: 0;
+}
+
+.detail-info-card p {
+  margin: 0;
+  color: var(--site-muted);
+  line-height: 1.75;
+}
+
+.detail-rating-card {
+  display: inline-grid;
+  justify-self: start;
+  gap: 4px;
+  padding: 16px 18px;
+}
+
+.detail-rating-card span {
+  color: var(--site-muted);
+  font-weight: 800;
+}
+
+.detail-rating-card strong {
+  color: var(--site-green);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.detail-community {
+  display: grid;
+  gap: 18px;
+  padding-top: 10px;
+}
+
+.detail-review-form {
+  position: static;
+  grid-template-columns: 160px minmax(0, 1fr) auto;
+  align-items: end;
+}
+
 .community-hero {
   max-width: 860px;
   margin-bottom: 32px;
@@ -1392,7 +1480,10 @@ body {
   .quiz-shell,
   .traits-section,
   .community-layout,
-  .detail-panel {
+  .detail-panel,
+  .detail-hero,
+  .detail-content-grid,
+  .detail-review-form {
     grid-template-columns: 1fr;
   }
 
