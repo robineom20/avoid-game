@@ -269,6 +269,141 @@ const questions = [
       },
     ],
   },
+  {
+    id: "q11",
+    category: "PACE CONTROL",
+    prompt: "작품의 리듬은 어느 쪽일 때 더 잘 맞나요?",
+    options: [
+      {
+        label: "천천히 스며드는 슬로우번",
+        caption: "느린 장면도 감정이 있으면 끝까지 따라갑니다",
+        scores: { emotional: 2, dreamy: 2, cerebral: 1 },
+      },
+      {
+        label: "컷이 빠르고 몸이 반응하는 전개",
+        caption: "생각보다 먼저 리듬과 박자가 중요합니다",
+        scores: { kinetic: 3, bold: 1 },
+      },
+      {
+        label: "퍼즐처럼 조각이 맞춰지는 구조",
+        caption: "장면마다 단서가 있는 작품에 끌립니다",
+        scores: { cerebral: 3, dark: 1 },
+      },
+      {
+        label: "공기감으로 밀고 가는 분위기",
+        caption: "사건보다 빛, 소리, 여백이 오래 남습니다",
+        scores: { dreamy: 3, emotional: 1 },
+      },
+    ],
+  },
+  {
+    id: "q12",
+    category: "SOUND TEXTURE",
+    prompt: "음악에서 가장 먼저 귀에 들어오는 질감은?",
+    options: [
+      {
+        label: "목소리의 떨림과 가사",
+        caption: "잘 부르는 것보다 진심이 느껴지는 곡",
+        scores: { emotional: 3, cerebral: 1 },
+      },
+      {
+        label: "묵직한 드럼과 베이스",
+        caption: "걷는 속도를 바꾸는 리듬",
+        scores: { kinetic: 3, bold: 1 },
+      },
+      {
+        label: "낯선 편곡과 이상한 소리",
+        caption: "처음엔 어색해도 계속 해석하게 되는 사운드",
+        scores: { cerebral: 2, dark: 1, bold: 1 },
+      },
+      {
+        label: "흐릿하게 번지는 앰비언스",
+        caption: "공간 전체가 노래처럼 느껴지는 곡",
+        scores: { dreamy: 3, dark: 1 },
+      },
+    ],
+  },
+  {
+    id: "q13",
+    category: "CONFLICT",
+    prompt: "이야기 속 갈등은 어떤 결일 때 몰입되나요?",
+    options: [
+      {
+        label: "사람과 사람 사이의 미묘한 어긋남",
+        caption: "큰 사건보다 관계의 작은 균열이 더 아픕니다",
+        scores: { emotional: 3, cerebral: 1 },
+      },
+      {
+        label: "도망치고 쫓기는 생존의 압박",
+        caption: "긴장감이 끊기지 않는 흐름이 좋습니다",
+        scores: { kinetic: 3, dark: 1 },
+      },
+      {
+        label: "선과 악이 흐려지는 도덕적 선택",
+        caption: "보고 나서도 어느 쪽인지 쉽게 말하기 어렵습니다",
+        scores: { cerebral: 3, dark: 2 },
+      },
+      {
+        label: "현실이 살짝 틀어지는 불길함",
+        caption: "익숙한 공간이 갑자기 낯설어질 때 끌립니다",
+        scores: { dark: 2, dreamy: 2, bold: 1 },
+      },
+    ],
+  },
+  {
+    id: "q14",
+    category: "VISUAL STYLE",
+    prompt: "화면의 스타일은 어떤 방향이면 더 좋나요?",
+    options: [
+      {
+        label: "자연광과 가까운 얼굴",
+        caption: "꾸미지 않은 표정과 순간을 믿는 편",
+        scores: { emotional: 3, dreamy: 1 },
+      },
+      {
+        label: "네온, 움직임, 선명한 대비",
+        caption: "보는 순간 눈이 즐거운 스타일",
+        scores: { bold: 3, kinetic: 2 },
+      },
+      {
+        label: "차갑고 정돈된 미래감",
+        caption: "깔끔한 구도와 지적인 긴장이 좋습니다",
+        scores: { cerebral: 2, dreamy: 2, dark: 1 },
+      },
+      {
+        label: "기괴하지만 아름다운 장식성",
+        caption: "조금 과감하고 낯선 미감에 반응합니다",
+        scores: { bold: 2, dark: 2, dreamy: 1 },
+      },
+    ],
+  },
+  {
+    id: "q15",
+    category: "FINAL MOOD",
+    prompt: "지금 추천받고 싶은 최종 무드는 어느 쪽인가요?",
+    options: [
+      {
+        label: "마음이 풀리는 사적인 위로",
+        caption: "조용하지만 정확하게 건드리는 작품",
+        scores: { emotional: 3, dreamy: 1 },
+      },
+      {
+        label: "기분을 확 끌어올리는 추진력",
+        caption: "바로 재생하고 바로 몰입되는 쾌감",
+        scores: { kinetic: 3, bold: 2 },
+      },
+      {
+        label: "끝나고도 생각나는 미로",
+        caption: "단순한 재미보다 해석의 여지가 중요합니다",
+        scores: { cerebral: 3, dark: 1 },
+      },
+      {
+        label: "낯설고 아름다운 밤의 감각",
+        caption: "몽환, 불안, 스타일이 섞인 취향",
+        scores: { dreamy: 2, dark: 2, bold: 1 },
+      },
+    ],
+  },
 ];
 
 const profileLabels = {
@@ -461,6 +596,126 @@ const movies = [
     tags: { emotional: 2, kinetic: 1, cerebral: 1, bold: 1 },
     note: "가볍게 흘러가지만 묘하게 현실적인 성장 서사를 좋아할 때 추천합니다.",
   },
+  {
+    title: "Portrait of a Lady on Fire",
+    subtitle: "Celine Sciamma",
+    tags: { emotional: 3, dreamy: 2, bold: 1 },
+    note: "말보다 시선과 침묵으로 감정이 쌓이는 영화를 좋아한다면 잘 맞습니다.",
+  },
+  {
+    title: "Parasite",
+    subtitle: "Bong Joon-ho",
+    tags: { cerebral: 3, dark: 2, kinetic: 1 },
+    note: "사회적 긴장과 장르적 재미가 동시에 있는 작품을 원할 때 강력합니다.",
+  },
+  {
+    title: "Spirited Away",
+    subtitle: "Hayao Miyazaki",
+    tags: { dreamy: 3, emotional: 2, bold: 1 },
+    note: "낯선 세계에 들어가는 감각과 따뜻한 성장의 결을 좋아할 때 어울립니다.",
+  },
+  {
+    title: "The Social Network",
+    subtitle: "David Fincher",
+    tags: { cerebral: 3, kinetic: 2, dark: 1 },
+    note: "빠른 대사, 차가운 긴장, 날카로운 구조를 좋아하는 취향에 잘 맞습니다.",
+  },
+  {
+    title: "Midsommar",
+    subtitle: "Ari Aster",
+    tags: { dark: 3, bold: 2, cerebral: 1 },
+    note: "밝은 화면 속 불안과 기괴한 아름다움에 끌린다면 추천합니다.",
+  },
+  {
+    title: "The Fall",
+    subtitle: "Tarsem Singh",
+    tags: { bold: 3, dreamy: 3, emotional: 1 },
+    note: "동화처럼 화려한 이미지와 환상적인 모험 감각을 좋아할 때 좋습니다.",
+  },
+  {
+    title: "Roma",
+    subtitle: "Alfonso Cuaron",
+    tags: { emotional: 3, cerebral: 1, dreamy: 1 },
+    note: "거대한 사건보다 삶의 결을 오래 바라보는 작품에 끌리는 취향에 맞습니다.",
+  },
+  {
+    title: "Baby Driver",
+    subtitle: "Edgar Wright",
+    tags: { kinetic: 3, bold: 2 },
+    note: "음악과 편집이 딱 맞물리는 쾌감을 좋아한다면 거의 바로 맞습니다.",
+  },
+  {
+    title: "Donnie Darko",
+    subtitle: "Richard Kelly",
+    tags: { cerebral: 2, dark: 2, dreamy: 2 },
+    note: "불안한 성장담과 미스터리한 세계관을 함께 즐기는 사람에게 어울립니다.",
+  },
+  {
+    title: "Chungking Express",
+    subtitle: "Wong Kar-wai",
+    tags: { dreamy: 3, emotional: 2, kinetic: 1 },
+    note: "도시의 밤, 엇갈린 감정, 음악 같은 리듬을 좋아할 때 추천합니다.",
+  },
+  {
+    title: "The Lighthouse",
+    subtitle: "Robert Eggers",
+    tags: { dark: 3, cerebral: 2, bold: 2 },
+    note: "거칠고 기괴한 긴장감, 미쳐가는 분위기에 끌리는 취향에 강합니다.",
+  },
+  {
+    title: "Amelie",
+    subtitle: "Jean-Pierre Jeunet",
+    tags: { dreamy: 2, emotional: 2, bold: 2 },
+    note: "사소한 순간을 사랑스럽고 스타일리시하게 보는 영화를 좋아할 때 맞습니다.",
+  },
+  {
+    title: "Heat",
+    subtitle: "Michael Mann",
+    tags: { kinetic: 2, dark: 1, cerebral: 2, bold: 1 },
+    note: "도회적인 긴장과 묵직한 범죄 드라마의 균형을 원할 때 좋습니다.",
+  },
+  {
+    title: "The Worst Person in the World",
+    subtitle: "Joachim Trier",
+    tags: { emotional: 3, cerebral: 1, kinetic: 1 },
+    note: "현실적인 방황과 관계의 결을 세련되게 따라가는 작품에 어울립니다.",
+  },
+  {
+    title: "The Truman Show",
+    subtitle: "Peter Weir",
+    tags: { cerebral: 2, emotional: 2, dreamy: 1 },
+    note: "가볍게 시작해 오래 남는 질문을 던지는 이야기를 좋아할 때 맞습니다.",
+  },
+  {
+    title: "Pan's Labyrinth",
+    subtitle: "Guillermo del Toro",
+    tags: { dark: 2, dreamy: 3, emotional: 2 },
+    note: "잔혹한 현실과 아름다운 환상이 함께 있는 작품을 좋아한다면 추천합니다.",
+  },
+  {
+    title: "Drive My Car",
+    subtitle: "Ryusuke Hamaguchi",
+    tags: { emotional: 3, cerebral: 2 },
+    note: "긴 대화와 침묵 속에서 감정이 천천히 열리는 작품에 잘 맞습니다.",
+  },
+  {
+    title: "Good Time",
+    subtitle: "Safdie Brothers",
+    tags: { kinetic: 3, dark: 2 },
+    note: "밤새 달리는 듯한 불안과 속도감을 즐기는 취향에 강하게 맞습니다.",
+  },
+  {
+    title: "Annihilation",
+    subtitle: "Alex Garland",
+    tags: { dreamy: 3, cerebral: 2, dark: 2 },
+    note: "아름답지만 불길한 SF 이미지와 해석의 여지를 좋아할 때 좋습니다.",
+  },
+  {
+    title: "The Royal Tenenbaums",
+    subtitle: "Wes Anderson",
+    tags: { bold: 2, emotional: 2, cerebral: 1 },
+    note: "스타일은 귀엽지만 마음은 쓸쓸한 가족 이야기에 끌린다면 어울립니다.",
+  },
 ];
 
 const musicTracks = [
@@ -650,6 +905,126 @@ const musicTracks = [
     tags: { dreamy: 2, emotional: 2 },
     note: "가볍게 반짝이는데 묘하게 아련한 곡을 좋아할 때 추천합니다.",
   },
+  {
+    title: "Sweet Disposition",
+    subtitle: "The Temper Trap",
+    tags: { emotional: 2, kinetic: 2, dreamy: 1 },
+    note: "벅차오르는 기타와 청량한 감정선을 함께 원할 때 잘 맞습니다.",
+  },
+  {
+    title: "Svefn-g-englar",
+    subtitle: "Sigur Ros",
+    tags: { dreamy: 3, emotional: 2 },
+    note: "언어보다 공간감과 서서히 커지는 감정에 반응한다면 추천합니다.",
+  },
+  {
+    title: "A Real Hero",
+    subtitle: "College & Electric Youth",
+    tags: { dreamy: 2, emotional: 2, kinetic: 1 },
+    note: "밤길을 천천히 달리는 듯한 신스와 낭만을 좋아할 때 어울립니다.",
+  },
+  {
+    title: "Time to Pretend",
+    subtitle: "MGMT",
+    tags: { bold: 2, kinetic: 2, dreamy: 1 },
+    note: "기분 좋은 반항심과 선명한 인디 팝 에너지가 필요할 때 좋습니다.",
+  },
+  {
+    title: "Lover, You Should've Come Over",
+    subtitle: "Jeff Buckley",
+    tags: { emotional: 3, cerebral: 1 },
+    note: "목소리 하나로 감정이 크게 흔들리는 곡을 좋아한다면 강하게 맞습니다.",
+  },
+  {
+    title: "Angel",
+    subtitle: "Massive Attack",
+    tags: { dark: 3, kinetic: 1, bold: 1 },
+    note: "천천히 다가오는 어두운 압박감과 묵직한 베이스를 좋아할 때 추천합니다.",
+  },
+  {
+    title: "Midnight",
+    subtitle: "The Blaze",
+    tags: { dreamy: 2, kinetic: 2, emotional: 1 },
+    note: "몽환적인 전자음과 감정적인 질주감이 같이 필요할 때 어울립니다.",
+  },
+  {
+    title: "Paper Planes",
+    subtitle: "M.I.A.",
+    tags: { bold: 3, kinetic: 2 },
+    note: "장난스럽고 대담한 리듬, 즉시 기억나는 후렴을 좋아한다면 맞습니다.",
+  },
+  {
+    title: "Hide and Seek",
+    subtitle: "Imogen Heap",
+    tags: { emotional: 2, dreamy: 2, cerebral: 1 },
+    note: "목소리를 악기처럼 쓰는 낯선 감정 표현에 끌릴 때 좋습니다.",
+  },
+  {
+    title: "The Less I Know The Better",
+    subtitle: "Tame Impala",
+    tags: { kinetic: 2, dreamy: 2, bold: 1 },
+    note: "몽롱하지만 몸이 먼저 반응하는 그루브를 원할 때 잘 맞습니다.",
+  },
+  {
+    title: "Cherry-coloured Funk",
+    subtitle: "Cocteau Twins",
+    tags: { dreamy: 3, emotional: 1 },
+    note: "가사가 또렷하지 않아도 빛나는 질감에 취하는 편이라면 추천합니다.",
+  },
+  {
+    title: "Karma Police",
+    subtitle: "Radiohead",
+    tags: { cerebral: 2, emotional: 2, dark: 1 },
+    note: "익숙한 멜로디 아래 이상한 불안이 흐르는 곡을 좋아할 때 맞습니다.",
+  },
+  {
+    title: "In the Aeroplane Over the Sea",
+    subtitle: "Neutral Milk Hotel",
+    tags: { emotional: 3, bold: 1 },
+    note: "투박하지만 이상하게 순수한 감정의 폭발을 좋아한다면 어울립니다.",
+  },
+  {
+    title: "Nightcall",
+    subtitle: "Kavinsky",
+    tags: { dark: 2, dreamy: 2, kinetic: 2 },
+    note: "네온빛 밤도시와 차가운 신스의 조합을 좋아할 때 추천합니다.",
+  },
+  {
+    title: "Garden Song",
+    subtitle: "Phoebe Bridgers",
+    tags: { emotional: 3, dreamy: 1, dark: 1 },
+    note: "작고 사적인 감정이 오래 남는 싱어송라이터 곡에 잘 맞습니다.",
+  },
+  {
+    title: "Archangel",
+    subtitle: "Burial",
+    tags: { dark: 2, dreamy: 3, cerebral: 1 },
+    note: "흐릿한 밤공기와 깨진 듯한 전자음의 감성을 좋아할 때 좋습니다.",
+  },
+  {
+    title: "New Person, Same Old Mistakes",
+    subtitle: "Tame Impala",
+    tags: { dreamy: 2, kinetic: 2, cerebral: 1 },
+    note: "느슨하게 흔들리지만 생각할 여지를 남기는 사이키델릭 팝에 어울립니다.",
+  },
+  {
+    title: "All I Need",
+    subtitle: "Radiohead",
+    tags: { emotional: 2, dark: 2, dreamy: 1 },
+    note: "차분하게 시작해 안쪽에서 크게 번지는 감정선을 좋아한다면 추천합니다.",
+  },
+  {
+    title: "Digital Love",
+    subtitle: "Daft Punk",
+    tags: { kinetic: 2, dreamy: 1, bold: 2, emotional: 1 },
+    note: "반짝이는 전자음과 기분 좋은 낭만을 동시에 원할 때 맞습니다.",
+  },
+  {
+    title: "Sweet Dreams, TN",
+    subtitle: "The Last Shadow Puppets",
+    tags: { emotional: 2, dark: 1, bold: 2 },
+    note: "과장된 로맨스와 드라마틱한 보컬을 즐기는 취향에 잘 어울립니다.",
+  },
 ];
 
 const personaProfiles = [
@@ -785,21 +1160,30 @@ function getRecommendations(items, scores) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
     .map(([axis]) => axis);
+  const answerSeed = state.answers.reduce((sum, answer, index) => {
+    return sum + (answer + 1) * (index + 3);
+  }, 0);
 
   const scoredItems = items
-    .map((item) => ({
-      ...item,
-      matchScore:
-        getMatchScore(item, scores) +
-        topAxes.reduce((bonus, axis, index) => {
-          const weight = item.tags[axis] || 0;
-          return bonus + weight * (topAxes.length - index) * 1.75;
-        }, 0),
-    }))
+    .map((item, itemIndex) => {
+      const rotation = ((answerSeed + item.title.length * 7 + itemIndex * 3) % 19) / 20;
+
+      return {
+        ...item,
+        matchScore:
+          getMatchScore(item, scores) +
+          topAxes.reduce((bonus, axis, index) => {
+            const weight = item.tags[axis] || 0;
+            return bonus + weight * (topAxes.length - index) * 1.75;
+          }, 0) +
+          rotation,
+      };
+    })
     .sort((a, b) => b.matchScore - a.matchScore);
 
   const selected = [];
   const usedLeadAxes = new Map();
+  const usedCreators = new Set();
 
   for (const item of scoredItems) {
     if (selected.length >= 4) {
@@ -808,13 +1192,19 @@ function getRecommendations(items, scores) {
 
     const leadAxis = Object.entries(item.tags).sort((a, b) => b[1] - a[1])[0]?.[0] || "mixed";
     const leadAxisCount = usedLeadAxes.get(leadAxis) || 0;
+    const creator = item.subtitle;
 
     if (leadAxisCount >= 1 && selected.length < 3) {
       continue;
     }
 
+    if (usedCreators.has(creator) && selected.length < 3) {
+      continue;
+    }
+
     selected.push(item);
     usedLeadAxes.set(leadAxis, leadAxisCount + 1);
+    usedCreators.add(creator);
   }
 
   if (selected.length < 4) {
