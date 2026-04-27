@@ -716,6 +716,102 @@ const movies = [
     tags: { bold: 2, emotional: 2, cerebral: 1 },
     note: "스타일은 귀엽지만 마음은 쓸쓸한 가족 이야기에 끌린다면 어울립니다.",
   },
+  {
+    title: "2001: A Space Odyssey",
+    subtitle: "Stanley Kubrick",
+    tags: { cerebral: 3, dreamy: 3, bold: 1 },
+    note: "영화사에 남은 고전 SF처럼 거대한 질문과 압도적인 이미지가 좋다면 맞습니다.",
+  },
+  {
+    title: "In the Mood for Love",
+    subtitle: "Wong Kar-wai",
+    tags: { emotional: 3, dreamy: 3, bold: 1 },
+    note: "유명하면서도 섬세한 걸작을 원한다면, 말하지 못한 감정의 밀도가 깊게 맞습니다.",
+  },
+  {
+    title: "Mulholland Drive",
+    subtitle: "David Lynch",
+    tags: { cerebral: 3, dreamy: 3, dark: 2 },
+    note: "평단에서 오래 사랑받는 미스터리처럼 해석할수록 이상해지는 작품에 어울립니다.",
+  },
+  {
+    title: "The Godfather",
+    subtitle: "Francis Ford Coppola",
+    tags: { dark: 2, cerebral: 2, emotional: 2 },
+    note: "유명한 고전 중에서도 인물의 무게와 비극적인 품격을 원할 때 좋은 선택입니다.",
+  },
+  {
+    title: "City of God",
+    subtitle: "Fernando Meirelles",
+    tags: { kinetic: 3, dark: 2, bold: 2 },
+    note: "빠른 에너지와 강렬한 현실감으로 높은 평가를 받은 범죄 드라마가 잘 맞습니다.",
+  },
+  {
+    title: "A Separation",
+    subtitle: "Asghar Farhadi",
+    tags: { cerebral: 3, emotional: 3, dark: 1 },
+    note: "큰 장치 없이도 도덕적 질문과 감정의 압박이 강한 작품을 좋아할 때 추천합니다.",
+  },
+  {
+    title: "Memories of Murder",
+    subtitle: "Bong Joon-ho",
+    tags: { dark: 3, cerebral: 2, emotional: 1 },
+    note: "잘 알려진 한국 걸작처럼 장르 재미와 씁쓸한 여운을 함께 원할 때 맞습니다.",
+  },
+  {
+    title: "Burning",
+    subtitle: "Lee Chang-dong",
+    tags: { cerebral: 3, dark: 2, dreamy: 2 },
+    note: "조용하지만 불길한 분위기와 해석의 여지가 큰 평단 호평작을 원할 때 어울립니다.",
+  },
+  {
+    title: "Yi Yi",
+    subtitle: "Edward Yang",
+    tags: { emotional: 3, cerebral: 2, dreamy: 1 },
+    note: "덜 대중적이지만 평가가 아주 좋은 삶의 관찰극을 좋아한다면 깊게 남습니다.",
+  },
+  {
+    title: "Tokyo Story",
+    subtitle: "Yasujiro Ozu",
+    tags: { emotional: 3, cerebral: 2 },
+    note: "조용한 고전 명작처럼 사소한 가족의 균열에서 큰 감정을 느끼는 취향에 맞습니다.",
+  },
+  {
+    title: "Children of Men",
+    subtitle: "Alfonso Cuaron",
+    tags: { kinetic: 2, dark: 2, cerebral: 2, emotional: 1 },
+    note: "묵직한 세계관과 긴장감 있는 연출로 인정받는 SF 드라마를 원할 때 좋습니다.",
+  },
+  {
+    title: "The Lives of Others",
+    subtitle: "Florian Henckel von Donnersmarck",
+    tags: { cerebral: 2, emotional: 3, dark: 2 },
+    note: "숨은 명작 느낌의 진지한 드라마와 조용한 감정 변화를 좋아할 때 추천합니다.",
+  },
+  {
+    title: "Stalker",
+    subtitle: "Andrei Tarkovsky",
+    tags: { dreamy: 3, cerebral: 3, dark: 1 },
+    note: "난해하지만 오래 회자되는 예술영화의 공기감과 철학성을 즐긴다면 잘 맞습니다.",
+  },
+  {
+    title: "Shoplifters",
+    subtitle: "Hirokazu Kore-eda",
+    tags: { emotional: 3, cerebral: 1, dark: 1 },
+    note: "따뜻하지만 마냥 편하지 않은 가족 드라마, 평가 좋은 현대작을 원할 때 좋습니다.",
+  },
+  {
+    title: "The Florida Project",
+    subtitle: "Sean Baker",
+    tags: { emotional: 3, dreamy: 1, bold: 1 },
+    note: "밝은 색감 아래 현실의 쓸쓸함이 있는 숨은 호평작에 끌린다면 어울립니다.",
+  },
+  {
+    title: "Only Lovers Left Alive",
+    subtitle: "Jim Jarmusch",
+    tags: { dreamy: 3, dark: 2, emotional: 1 },
+    note: "대중적이지는 않아도 감각적인 분위기로 사랑받는 밤의 영화를 원할 때 맞습니다.",
+  },
 ];
 
 const musicTracks = [
@@ -738,10 +834,10 @@ const musicTracks = [
     note: "밤의 질주감과 반짝이는 분위기를 함께 원한다면 추천합니다.",
   },
   {
-    title: "Bad Guy",
+    title: "Happier Than Ever",
     subtitle: "Billie Eilish",
-    tags: { dark: 2, bold: 2, kinetic: 1 },
-    note: "장난기 있으면서도 약간 위험한 에너지를 좋아할 때 어울립니다.",
+    tags: { emotional: 3, dark: 1, bold: 2 },
+    note: "유명하지만 감정의 폭발과 구성 전환이 확실한 곡을 원할 때 잘 맞습니다.",
   },
   {
     title: "Runaway",
@@ -834,10 +930,10 @@ const musicTracks = [
     note: "차갑고 도회적인 리듬 위에서 걷고 싶은 취향에 잘 맞습니다.",
   },
   {
-    title: "After Dark",
-    subtitle: "Mr.Kitty",
-    tags: { dark: 3, dreamy: 2 },
-    note: "어두운 밤공기와 몽환적인 신스의 조합을 좋아할 때 어울립니다.",
+    title: "Roads",
+    subtitle: "Portishead",
+    tags: { dark: 3, dreamy: 2, emotional: 2 },
+    note: "트립합 명곡처럼 어둡고 아름다운 슬픔을 좋아한다면 강하게 맞습니다.",
   },
   {
     title: "Intro",
@@ -1025,7 +1121,188 @@ const musicTracks = [
     tags: { emotional: 2, dark: 1, bold: 2 },
     note: "과장된 로맨스와 드라마틱한 보컬을 즐기는 취향에 잘 어울립니다.",
   },
+  {
+    title: "A Day in the Life",
+    subtitle: "The Beatles",
+    tags: { cerebral: 3, dreamy: 2, bold: 1 },
+    note: "너무 유명하지만 여전히 실험적인 클래식 명곡을 원할 때 잘 맞습니다.",
+  },
+  {
+    title: "Heroes",
+    subtitle: "David Bowie",
+    tags: { emotional: 2, bold: 3, kinetic: 1 },
+    note: "크고 낭만적인 에너지, 오래 살아남은 대표곡의 힘을 원한다면 추천합니다.",
+  },
+  {
+    title: "This Must Be the Place",
+    subtitle: "Talking Heads",
+    tags: { emotional: 2, kinetic: 2, dreamy: 1 },
+    note: "유명하면서도 세련된 뉴웨이브 감성과 따뜻한 반복감을 좋아할 때 맞습니다.",
+  },
+  {
+    title: "Common People",
+    subtitle: "Pulp",
+    tags: { kinetic: 3, bold: 2, cerebral: 1 },
+    note: "영국 인디록 대표곡처럼 재치와 에너지, 사회적 시선을 함께 원할 때 좋습니다.",
+  },
+  {
+    title: "Since I Left You",
+    subtitle: "The Avalanches",
+    tags: { dreamy: 3, kinetic: 2, bold: 1 },
+    note: "샘플링 명반의 대표곡처럼 반짝이고 낯선 감각을 좋아한다면 어울립니다.",
+  },
+  {
+    title: "Unfinished Sympathy",
+    subtitle: "Massive Attack",
+    tags: { emotional: 3, dark: 1, bold: 1 },
+    note: "평가 좋은 트립합 클래식 중에서도 감정선이 크게 움직이는 곡입니다.",
+  },
+  {
+    title: "Idioteque",
+    subtitle: "Radiohead",
+    tags: { cerebral: 3, kinetic: 2, dark: 2 },
+    note: "불안한 전자음과 지적인 긴장감이 있는 명곡을 원할 때 잘 맞습니다.",
+  },
+  {
+    title: "Weird Fishes/Arpeggi",
+    subtitle: "Radiohead",
+    tags: { dreamy: 3, emotional: 2, cerebral: 1 },
+    note: "몽환적인 기타와 점점 깊어지는 감정으로 오래 사랑받는 곡입니다.",
+  },
+  {
+    title: "Paper Bag",
+    subtitle: "Fiona Apple",
+    tags: { emotional: 3, cerebral: 2, bold: 1 },
+    note: "섬세한 가사와 독특한 리듬감으로 평가 좋은 싱어송라이터 곡에 어울립니다.",
+  },
+  {
+    title: "Fast Car",
+    subtitle: "Tracy Chapman",
+    tags: { emotional: 3, cerebral: 1 },
+    note: "유명하지만 과장 없이 깊은 서사를 가진 곡을 좋아한다면 잘 맞습니다.",
+  },
+  {
+    title: "Strange Mercy",
+    subtitle: "St. Vincent",
+    tags: { cerebral: 2, dreamy: 2, bold: 2 },
+    note: "덜 대중적이지만 평단에서 사랑받는 아트팝의 날카로운 결을 원할 때 좋습니다.",
+  },
+  {
+    title: "Holocene",
+    subtitle: "Bon Iver",
+    tags: { emotional: 3, dreamy: 2 },
+    note: "잔잔하지만 깊은 울림으로 평가 좋은 인디 포크를 원한다면 추천합니다.",
+  },
+  {
+    title: "Motion Sickness",
+    subtitle: "Phoebe Bridgers",
+    tags: { emotional: 3, kinetic: 1, cerebral: 1 },
+    note: "현대 인디 싱어송라이터 곡 중 감정과 멜로디가 모두 선명한 선택입니다.",
+  },
+  {
+    title: "Untitled (How Does It Feel)",
+    subtitle: "D'Angelo",
+    tags: { emotional: 3, dreamy: 1, bold: 1 },
+    note: "소울 명반의 대표곡처럼 목소리와 그루브의 깊이를 원할 때 잘 맞습니다.",
+  },
+  {
+    title: "Once in a Lifetime",
+    subtitle: "Talking Heads",
+    tags: { cerebral: 3, kinetic: 2, bold: 2 },
+    note: "유명하면서도 이상한 리듬과 질문이 살아 있는 곡을 좋아할 때 어울립니다.",
+  },
+  {
+    title: "Rebellion (Lies)",
+    subtitle: "Arcade Fire",
+    tags: { kinetic: 2, emotional: 2, bold: 1 },
+    note: "인디록 대표곡처럼 벅차오르는 합창감과 추진력을 원할 때 좋습니다.",
+  },
+  {
+    title: "Maps",
+    subtitle: "Yeah Yeah Yeahs",
+    tags: { emotional: 3, kinetic: 1, bold: 1 },
+    note: "단순하지만 강한 감정선으로 오래 사랑받는 록 발라드를 좋아한다면 맞습니다.",
+  },
+  {
+    title: "Blue in Green",
+    subtitle: "Miles Davis",
+    tags: { dreamy: 3, emotional: 2, cerebral: 1 },
+    note: "차분하고 세련된 재즈 명곡처럼 여백의 분위기를 원할 때 추천합니다.",
+  },
+  {
+    title: "Sinnerman",
+    subtitle: "Nina Simone",
+    tags: { kinetic: 3, emotional: 2, dark: 1 },
+    note: "압도적인 보컬과 리듬으로 유명한 클래식 명곡의 에너지가 잘 맞습니다.",
+  },
+  {
+    title: "Video Games",
+    subtitle: "Lana Del Rey",
+    tags: { dreamy: 3, emotional: 2, dark: 1 },
+    note: "유명하지만 독특한 우울과 낭만으로 한 시대의 무드를 만든 곡입니다.",
+  },
 ];
+
+const acclaimedMovieTitles = new Set([
+  "2001: A Space Odyssey",
+  "A Separation",
+  "Aftersun",
+  "Arrival",
+  "Before Sunrise",
+  "Burning",
+  "Children of Men",
+  "City of God",
+  "Decision to Leave",
+  "Drive My Car",
+  "Everything Everywhere All at Once",
+  "Her",
+  "In the Mood for Love",
+  "Memories of Murder",
+  "Moonlight",
+  "Mulholland Drive",
+  "Oldboy",
+  "Parasite",
+  "Portrait of a Lady on Fire",
+  "Shoplifters",
+  "Stalker",
+  "The Godfather",
+  "The Handmaiden",
+  "The Lives of Others",
+  "Tokyo Story",
+  "Yi Yi",
+  "문라이트",
+  "올드보이",
+]);
+
+const acclaimedMusicTitles = new Set([
+  "A Day in the Life",
+  "Blue in Green",
+  "Cellophane",
+  "Common People",
+  "Everything in Its Right Place",
+  "Fast Car",
+  "Heroes",
+  "Holocene",
+  "Hyperballad",
+  "Idioteque",
+  "Karma Police",
+  "Maps",
+  "Motion Sickness",
+  "Nights",
+  "Once in a Lifetime",
+  "Paper Bag",
+  "Pyramids",
+  "Roads",
+  "Runaway",
+  "Sinnerman",
+  "Since I Left You",
+  "Space Song",
+  "Strange Mercy",
+  "This Must Be the Place",
+  "Unfinished Sympathy",
+  "Untitled (How Does It Feel)",
+  "Weird Fishes/Arpeggi",
+]);
 
 const personaProfiles = [
   {
@@ -1155,6 +1432,14 @@ function getMatchScore(item, scores) {
   }, 0);
 }
 
+function getCurationBoost(item) {
+  if (acclaimedMovieTitles.has(item.title) || acclaimedMusicTitles.has(item.title)) {
+    return 2.4;
+  }
+
+  return 0;
+}
+
 function getRecommendations(items, scores) {
   const topAxes = Object.entries(scores)
     .sort((a, b) => b[1] - a[1])
@@ -1172,6 +1457,7 @@ function getRecommendations(items, scores) {
         ...item,
         matchScore:
           getMatchScore(item, scores) +
+          getCurationBoost(item) +
           topAxes.reduce((bonus, axis, index) => {
             const weight = item.tags[axis] || 0;
             return bonus + weight * (topAxes.length - index) * 1.75;
