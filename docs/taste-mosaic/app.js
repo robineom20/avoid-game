@@ -1351,7 +1351,7 @@ const defaultPersona = {
 
 const STORAGE_KEY = "taste-mosaic-result";
 const COMMUNITY_STORAGE_KEY = "taste-mosaic-community-posts";
-const SITE_VERSION = "20";
+const SITE_VERSION = "21";
 
 const state = {
   currentQuestionIndex: 0,
@@ -1827,6 +1827,28 @@ async function fetchTrackPreview(item) {
   return previewData;
 }
 
+function buildCommunityLookupItem(post) {
+  return {
+    title: post.title,
+    subtitle: post.creator,
+    tags: {},
+    note: post.comment,
+  };
+}
+
+async function enrichCommunityPost(post) {
+  const lookupItem = buildCommunityLookupItem(post);
+  const lookup = post.type === "movie" ? await fetchMovieArtwork(lookupItem) : await fetchTrackPreview(lookupItem);
+
+  return {
+    ...post,
+    artworkUrl: lookup?.artworkUrl || null,
+    previewUrl: lookup?.previewUrl || null,
+    sourceLabel: lookup?.sourceLabel || post.title,
+    openUrl: lookup?.openUrl || buildSearchUrl(lookupItem, post.type),
+  };
+}
+
 function resetPreviewButtons() {
   document.querySelectorAll("[data-preview-button]").forEach((button) => {
     button.textContent = "미리듣기";
@@ -2265,9 +2287,40 @@ function renderCommunityPosts() {
     .map((post) => {
       const typeLabel = post.type === "movie" ? "영화" : "음악";
       const stars = "★".repeat(Number(post.rating || 0)) + "☆".repeat(5 - Number(post.rating || 0));
+      const fallbackIcon = post.type === "movie" ? "Film" : "♪";
+      const artworkMarkup = `
+        <div class="community-artwork ${post.artworkUrl ? "has-image" : ""}">
+          ${
+            post.artworkUrl
+              ? `<img src="${escapeHtml(post.artworkUrl)}" alt="${escapeHtml(post.title)} ${typeLabel} 이미지" loading="lazy" />`
+              : `<div class="album-cover-fallback">
+                  <span class="album-cover-icon">${fallbackIcon}</span>
+                  <span class="album-cover-text">${escapeHtml(post.creator)}</span>
+                </div>`
+          }
+        </div>
+      `;
+      const previewMarkup =
+        post.type === "music" && post.previewUrl
+          ? `
+            <button
+              class="preview-button community-preview"
+              type="button"
+              data-community-preview="${escapeHtml(post.previewUrl)}"
+              data-preview-title="${escapeHtml(post.title)}"
+            >
+              미리듣기
+            </button>
+          `
+          : "";
+      const linkLabel = post.type === "movie" ? "보러 가기" : "들으러 가기";
+      const linkMarkup = post.openUrl
+        ? `<a class="open-link community-open-link" href="${escapeHtml(post.openUrl)}" target="_blank" rel="noreferrer">${linkLabel}</a>`
+        : "";
 
       return `
         <article class="community-card fade-in">
+          ${artworkMarkup}
           <div class="recommend-meta">
             <span class="pill">${typeLabel}</span>
             <span class="pill">${stars}</span>
@@ -2275,16 +2328,56 @@ function renderCommunityPosts() {
           <h2>${escapeHtml(post.title)}</h2>
           <p class="community-creator">${escapeHtml(post.creator)}</p>
           <p>${escapeHtml(post.comment)}</p>
+          <div class="community-card-actions">
+            ${previewMarkup}
+            ${linkMarkup}
+          </div>
         </article>
       `;
     })
     .join("");
+
+  el.communityList.querySelectorAll("[data-community-preview]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const previewUrl = button.dataset.communityPreview;
+      const title = button.dataset.previewTitle || "이 곡";
+      const key = `community::${previewUrl}`;
+
+      if (!previewUrl) {
+        return;
+      }
+
+      if (state.activePreviewKey === key) {
+        pauseActivePreview();
+        return;
+      }
+
+      pauseActivePreview();
+      let audio = state.audioCache.get(key);
+      if (!audio) {
+        audio = new Audio(previewUrl);
+        audio.preload = "none";
+        state.audioCache.set(key, audio);
+        attachAudioLifecycle(audio, key);
+      }
+
+      try {
+        await audio.play();
+        state.activePreviewKey = key;
+        resetPreviewButtons();
+        button.textContent = "일시정지";
+        button.setAttribute("aria-label", `${title} 미리듣기 일시정지`);
+      } catch {
+        button.textContent = "재생 실패";
+      }
+    });
+  });
 }
 
 function initCommunityPage() {
   renderCommunityPosts();
 
-  el.communityForm?.addEventListener("submit", (event) => {
+  el.communityForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(el.communityForm);
@@ -2301,10 +2394,31 @@ function initCommunityPage() {
       return;
     }
 
-    const posts = [nextPost, ...loadCommunityPosts()].slice(0, 30);
+    const submitButton = el.communityForm.querySelector("button[type='submit']");
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "자동으로 찾는 중...";
+    }
+
+    let enrichedPost = nextPost;
+    try {
+      enrichedPost = await enrichCommunityPost(nextPost);
+    } catch {
+      enrichedPost = {
+        ...nextPost,
+        openUrl: buildSearchUrl(buildCommunityLookupItem(nextPost), nextPost.type),
+      };
+    }
+
+    const posts = [enrichedPost, ...loadCommunityPosts()].slice(0, 30);
     saveCommunityPosts(posts);
     el.communityForm.reset();
     renderCommunityPosts();
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "추천 남기기";
+    }
   });
 }
 
