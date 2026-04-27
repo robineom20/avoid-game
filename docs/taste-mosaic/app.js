@@ -1350,6 +1350,7 @@ const defaultPersona = {
 };
 
 const STORAGE_KEY = "taste-mosaic-result";
+const COMMUNITY_STORAGE_KEY = "taste-mosaic-community-posts";
 
 const state = {
   currentQuestionIndex: 0,
@@ -1377,6 +1378,19 @@ const el = {
   movieList: document.getElementById("movie-list"),
   musicList: document.getElementById("music-list"),
   copySummary: document.getElementById("copy-summary"),
+  detailOverlay: document.getElementById("detail-overlay"),
+  detailClose: document.getElementById("detail-close"),
+  detailArtwork: document.getElementById("detail-artwork"),
+  detailType: document.getElementById("detail-type"),
+  detailTitle: document.getElementById("detail-title"),
+  detailSubtitle: document.getElementById("detail-subtitle"),
+  detailReason: document.getElementById("detail-reason"),
+  detailNote: document.getElementById("detail-note"),
+  detailTraits: document.getElementById("detail-traits"),
+  detailOpenLink: document.getElementById("detail-open-link"),
+  communityForm: document.getElementById("community-form"),
+  communityList: document.getElementById("community-list"),
+  communityEmpty: document.getElementById("community-empty"),
 };
 
 function createEmptyScores() {
@@ -1573,10 +1587,66 @@ function normalizeText(text) {
     .replace(/[^a-z0-9가-힣]/g, "");
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function buildSearchUrl(item, kind) {
   const service = kind === "movie" ? "watch" : "listen";
   const query = encodeURIComponent(`${item.title} ${item.subtitle} ${service}`);
   return `https://www.google.com/search?q=${query}`;
+}
+
+function getItemTraits(item) {
+  return Object.keys(item.tags)
+    .sort((a, b) => item.tags[b] - item.tags[a])
+    .slice(0, 3)
+    .map((axis) => profileLabels[axis]);
+}
+
+function closeDetailPanel() {
+  el.detailOverlay?.classList.add("hidden");
+  document.body.classList.remove("modal-open");
+}
+
+function openDetailPanel(item, scores, kind, artworkData = null) {
+  if (!el.detailOverlay) {
+    return;
+  }
+
+  const typeLabel = kind === "movie" ? "Movie detail" : "Music detail";
+  const actionLabel = kind === "movie" ? "볼 수 있는 곳 찾기" : "들을 수 있는 곳 찾기";
+  const fallbackIcon = kind === "movie" ? "Film" : "♪";
+  const artworkUrl = artworkData?.artworkUrl || null;
+  const openUrl = artworkData?.openUrl || buildSearchUrl(item, kind);
+  const traits = getItemTraits(item);
+
+  el.detailType.textContent = typeLabel;
+  el.detailTitle.textContent = item.title;
+  el.detailSubtitle.textContent = item.subtitle;
+  el.detailReason.textContent = buildReason(item, scores);
+  el.detailNote.textContent =
+    kind === "movie"
+      ? "카드를 누르면 바로 이동하지 않고, 먼저 이 작품이 왜 추천됐는지 확인할 수 있게 바꿨어요."
+      : "카드를 누르면 곡 설명을 먼저 보고, 필요하면 결과 카드의 미리듣기나 아래 버튼으로 이동할 수 있어요.";
+  el.detailTraits.innerHTML = traits.map((trait) => `<span class="trait-chip">${escapeHtml(trait)}</span>`).join("");
+  el.detailOpenLink.href = openUrl;
+  el.detailOpenLink.textContent = actionLabel;
+  el.detailArtwork.className = `detail-artwork ${artworkUrl ? "has-image" : ""}`;
+  el.detailArtwork.innerHTML = artworkUrl
+    ? `<img src="${artworkUrl}" alt="${escapeHtml(item.title)} ${kind === "movie" ? "포스터" : "앨범 커버"}" />`
+    : `<div class="album-cover-fallback">
+        <span class="album-cover-icon">${fallbackIcon}</span>
+        <span class="album-cover-text">${escapeHtml(item.subtitle)}</span>
+      </div>`;
+
+  el.detailOverlay.classList.remove("hidden");
+  document.body.classList.add("modal-open");
 }
 
 function getWikipediaMovieTitle(item) {
@@ -1797,10 +1867,7 @@ async function handlePreviewToggle(item, button, status) {
 function renderRecommendationCards(container, items, scores, kind = "default") {
   container.innerHTML = "";
   items.forEach((item) => {
-    const topAxes = Object.keys(item.tags)
-      .sort((a, b) => item.tags[b] - item.tags[a])
-      .slice(0, 2)
-      .map((axis) => profileLabels[axis]);
+    const topAxes = getItemTraits(item).slice(0, 2);
 
     const card = document.createElement("article");
     card.className = `recommend-card ${kind}-card fade-in`;
@@ -1831,9 +1898,12 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
       </div>
     `
         : "";
-    const actionLabel = kind === "movie" ? "바로 보기" : kind === "music" ? "바로 듣기" : "열기";
+    const actionLabel = "상세 보기";
     const initialOpenUrl = cachedPreview?.openUrl || buildSearchUrl(item, kind);
 
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `${item.title} 상세 설명 보기`);
     card.innerHTML = `
       ${artworkMarkup}
       <div class="recommend-meta">
@@ -1848,7 +1918,7 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
       <div class="recommend-actions">
         ${previewMarkup}
       </div>
-      <a class="open-link" href="${initialOpenUrl}" target="_blank" rel="noreferrer" data-open-link>${actionLabel}</a>
+      <button class="open-link" type="button" data-open-link data-open-url="${initialOpenUrl}">${actionLabel}</button>
     `;
 
     const albumCover = card.querySelector("[data-album-cover]");
@@ -1859,7 +1929,20 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
         return;
       }
 
-      openLink?.click();
+      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
+    });
+
+    openLink?.addEventListener("click", () => {
+      openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
     });
 
     if (kind === "music") {
@@ -1882,7 +1965,7 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
           albumCover.innerHTML = `<img src="${previewData.artworkUrl}" alt="${item.title} ${kind === "movie" ? "포스터" : "앨범 커버"}" loading="lazy" />`;
 
           if (previewData.openUrl && openLink) {
-            openLink.href = previewData.openUrl;
+            openLink.dataset.openUrl = previewData.openUrl;
           }
         })
         .catch(() => {
@@ -1951,6 +2034,73 @@ function loadResultData() {
   }
 }
 
+function loadCommunityPosts() {
+  try {
+    const raw = localStorage.getItem(COMMUNITY_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCommunityPosts(posts) {
+  localStorage.setItem(COMMUNITY_STORAGE_KEY, JSON.stringify(posts));
+}
+
+function renderCommunityPosts() {
+  if (!el.communityList) {
+    return;
+  }
+
+  const posts = loadCommunityPosts();
+  el.communityEmpty?.classList.toggle("hidden", posts.length > 0);
+  el.communityList.innerHTML = posts
+    .map((post) => {
+      const typeLabel = post.type === "movie" ? "영화" : "음악";
+      const stars = "★".repeat(Number(post.rating || 0)) + "☆".repeat(5 - Number(post.rating || 0));
+
+      return `
+        <article class="community-card fade-in">
+          <div class="recommend-meta">
+            <span class="pill">${typeLabel}</span>
+            <span class="pill">${stars}</span>
+          </div>
+          <h2>${escapeHtml(post.title)}</h2>
+          <p class="community-creator">${escapeHtml(post.creator)}</p>
+          <p>${escapeHtml(post.comment)}</p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function initCommunityPage() {
+  renderCommunityPosts();
+
+  el.communityForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(el.communityForm);
+    const nextPost = {
+      id: Date.now(),
+      type: formData.get("type"),
+      title: String(formData.get("title") || "").trim(),
+      creator: String(formData.get("creator") || "").trim(),
+      rating: Number(formData.get("rating") || 5),
+      comment: String(formData.get("comment") || "").trim(),
+    };
+
+    if (!nextPost.title || !nextPost.creator || !nextPost.comment) {
+      return;
+    }
+
+    const posts = [nextPost, ...loadCommunityPosts()].slice(0, 30);
+    saveCommunityPosts(posts);
+    el.communityForm.reset();
+    renderCommunityPosts();
+  });
+}
+
 function renderResultData(resultData) {
   const { scores, persona, movieResults, musicResults } = resultData;
 
@@ -2009,7 +2159,7 @@ function selectOption(optionIndex) {
 
   if (state.currentQuestionIndex === questions.length - 1) {
     saveResultData(buildResultData());
-    window.location.href = "./result.html";
+    window.location.href = "./result.html?v=17";
     return;
   }
 
@@ -2033,6 +2183,18 @@ function initQuizPage() {
 }
 
 function initResultPage() {
+  el.detailClose?.addEventListener("click", closeDetailPanel);
+  el.detailOverlay?.addEventListener("click", (event) => {
+    if (event.target === el.detailOverlay) {
+      closeDetailPanel();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeDetailPanel();
+    }
+  });
+
   const resultData = loadResultData();
   if (!resultData) {
     el.emptyState?.classList.remove("hidden");
@@ -2053,6 +2215,11 @@ function initSite() {
 
   if (page === "result") {
     initResultPage();
+    return;
+  }
+
+  if (page === "community") {
+    initCommunityPage();
   }
 }
 

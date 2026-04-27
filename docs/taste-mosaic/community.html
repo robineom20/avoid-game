@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>커뮤니티 | Taste Mosaic</title>
+    <meta
+      name="description"
+      content="Taste Mosaic 커뮤니티에서 영화와 음악을 직접 추천하고 별점과 한줄평을 남겨보세요."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="커뮤니티 | Taste Mosaic" />
+    <meta
+      property="og:description"
+      content="사람들이 직접 남기는 영화와 음악 추천을 확인해보세요."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="community">
+    <header class="site-header">
+      <a class="brand-mark" href="./index.html?v=17">Taste Mosaic</a>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a class="nav-link" href="./index.html?v=17">홈</a>
+        <a class="nav-link" href="./quiz.html?v=17">검사</a>
+        <a class="nav-link" href="./result.html?v=17">결과</a>
+        <a class="nav-link is-active" href="./community.html?v=17">커뮤니티</a>
+      </nav>
+    </header>
+
+    <main class="community-page">
+      <section class="community-hero">
+        <p class="eyebrow">Taste community</p>
+        <h1>좋았던 영화와 음악을 남겨주세요.</h1>
+        <p class="hero-text">
+          추천하고 싶은 작품, 별점, 한줄평을 기록할 수 있습니다. 지금 버전은 무료
+          정적 사이트라 내 브라우저에 저장되고, 나중에 서버를 붙이면 모두가 함께
+          보는 커뮤니티로 확장할 수 있습니다.
+        </p>
+      </section>
+
+      <section class="community-layout">
+        <form id="community-form" class="community-form">
+          <label>
+            종류
+            <select name="type" required>
+              <option value="movie">영화</option>
+              <option value="music">음악</option>
+            </select>
+          </label>
+          <label>
+            제목
+            <input name="title" type="text" placeholder="예: Burning" required />
+          </label>
+          <label>
+            감독 / 아티스트
+            <input name="creator" type="text" placeholder="예: Lee Chang-dong" required />
+          </label>
+          <label>
+            별점
+            <select name="rating" required>
+              <option value="5">5점</option>
+              <option value="4">4점</option>
+              <option value="3">3점</option>
+              <option value="2">2점</option>
+              <option value="1">1점</option>
+            </select>
+          </label>
+          <label>
+            한줄평
+            <textarea
+              name="comment"
+              rows="5"
+              placeholder="왜 추천하고 싶은지 짧게 적어주세요."
+              required
+            ></textarea>
+          </label>
+          <button class="primary-button" type="submit">추천 남기기</button>
+        </form>
+
+        <section class="community-feed">
+          <div class="section-heading">
+            <p class="eyebrow">User picks</p>
+            <h2>사람들이 남긴 추천</h2>
+          </div>
+          <p id="community-empty" class="community-empty">
+            아직 추천이 없습니다. 첫 추천을 남겨보세요.
+          </p>
+          <div id="community-list" class="community-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js?v=17"></script>
+  </body>
+</html>
