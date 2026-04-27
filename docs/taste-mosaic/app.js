@@ -1610,12 +1610,32 @@ function getItemTraits(item) {
 }
 
 function closeDetailPanel() {
-  el.detailOverlay?.classList.add("hidden");
+  document.getElementById("detail-overlay")?.classList.add("hidden");
   document.body.classList.remove("modal-open");
 }
 
 function openDetailPanel(item, scores, kind, artworkData = null) {
-  if (!el.detailOverlay) {
+  const detailOverlay = document.getElementById("detail-overlay");
+  const detailArtwork = document.getElementById("detail-artwork");
+  const detailType = document.getElementById("detail-type");
+  const detailTitle = document.getElementById("detail-title");
+  const detailSubtitle = document.getElementById("detail-subtitle");
+  const detailReason = document.getElementById("detail-reason");
+  const detailNote = document.getElementById("detail-note");
+  const detailTraits = document.getElementById("detail-traits");
+  const detailOpenLink = document.getElementById("detail-open-link");
+
+  if (
+    !detailOverlay ||
+    !detailArtwork ||
+    !detailType ||
+    !detailTitle ||
+    !detailSubtitle ||
+    !detailReason ||
+    !detailNote ||
+    !detailTraits ||
+    !detailOpenLink
+  ) {
     return;
   }
 
@@ -1626,26 +1646,26 @@ function openDetailPanel(item, scores, kind, artworkData = null) {
   const openUrl = artworkData?.openUrl || buildSearchUrl(item, kind);
   const traits = getItemTraits(item);
 
-  el.detailType.textContent = typeLabel;
-  el.detailTitle.textContent = item.title;
-  el.detailSubtitle.textContent = item.subtitle;
-  el.detailReason.textContent = buildReason(item, scores);
-  el.detailNote.textContent =
+  detailType.textContent = typeLabel;
+  detailTitle.textContent = item.title;
+  detailSubtitle.textContent = item.subtitle;
+  detailReason.textContent = buildReason(item, scores);
+  detailNote.textContent =
     kind === "movie"
       ? "카드를 누르면 바로 이동하지 않고, 먼저 이 작품이 왜 추천됐는지 확인할 수 있게 바꿨어요."
       : "카드를 누르면 곡 설명을 먼저 보고, 필요하면 결과 카드의 미리듣기나 아래 버튼으로 이동할 수 있어요.";
-  el.detailTraits.innerHTML = traits.map((trait) => `<span class="trait-chip">${escapeHtml(trait)}</span>`).join("");
-  el.detailOpenLink.href = openUrl;
-  el.detailOpenLink.textContent = actionLabel;
-  el.detailArtwork.className = `detail-artwork ${artworkUrl ? "has-image" : ""}`;
-  el.detailArtwork.innerHTML = artworkUrl
+  detailTraits.innerHTML = traits.map((trait) => `<span class="trait-chip">${escapeHtml(trait)}</span>`).join("");
+  detailOpenLink.href = openUrl;
+  detailOpenLink.textContent = actionLabel;
+  detailArtwork.className = `detail-artwork ${artworkUrl ? "has-image" : ""}`;
+  detailArtwork.innerHTML = artworkUrl
     ? `<img src="${artworkUrl}" alt="${escapeHtml(item.title)} ${kind === "movie" ? "포스터" : "앨범 커버"}" />`
     : `<div class="album-cover-fallback">
         <span class="album-cover-icon">${fallbackIcon}</span>
         <span class="album-cover-text">${escapeHtml(item.subtitle)}</span>
       </div>`;
 
-  el.detailOverlay.classList.remove("hidden");
+  detailOverlay.classList.remove("hidden");
   document.body.classList.add("modal-open");
 }
 
@@ -1941,7 +1961,9 @@ function renderRecommendationCards(container, items, scores, kind = "default") {
       openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
     });
 
-    openLink?.addEventListener("click", () => {
+    openLink?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       openDetailPanel(item, scores, kind, state.previewCache.get(artworkKey) || null);
     });
 
@@ -2159,7 +2181,7 @@ function selectOption(optionIndex) {
 
   if (state.currentQuestionIndex === questions.length - 1) {
     saveResultData(buildResultData());
-    window.location.href = "./result.html?v=17";
+    window.location.href = "./result.html?v=18";
     return;
   }
 
