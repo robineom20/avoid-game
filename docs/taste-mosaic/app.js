@@ -1351,7 +1351,7 @@ const defaultPersona = {
 
 const STORAGE_KEY = "taste-mosaic-result";
 const COMMUNITY_STORAGE_KEY = "taste-mosaic-community-posts";
-const SITE_VERSION = "23";
+const SITE_VERSION = "24";
 
 const state = {
   currentQuestionIndex: 0,

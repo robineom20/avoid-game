@@ -1326,11 +1326,13 @@ body {
   gap: 8px;
   color: var(--site-ink);
   font-weight: 900;
+  line-height: 1.2;
 }
 
 .community-form input,
 .community-form select,
 .community-form textarea {
+  display: block;
   width: 100%;
   border: 1px solid var(--site-line);
   border-radius: 8px;
@@ -1341,6 +1343,10 @@ body {
 
 .community-form textarea {
   resize: vertical;
+}
+
+.community-form .primary-button {
+  width: 100%;
 }
 
 .community-list {
